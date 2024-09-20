@@ -133,6 +133,7 @@ export const signin = async (req, res) => {
 }
 }
 
+//Signout
 export const signout = async (req, res) => {
     try {
       // Clear the access token from cookies
@@ -149,8 +150,17 @@ export const signout = async (req, res) => {
     }
   };
   
-
-
+// Get all students
+export const getStudents = async (req,res)=>{
+    try {
+        const students = await Student.find()
+        res.json(students);
+    } catch (error) {
+        console.log( "Error while getting Students ",error);
+        res.status(500).send({message:"Internal Server Error"});
+    }
+}
+  
 // Signup controller
 // export const signup = async (req, res) => {
 //   const { name, email, password, phone, skills, workingAt, yearOfPassing, course, batch } = req.body;
