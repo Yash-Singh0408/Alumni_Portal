@@ -1,52 +1,79 @@
 import Event from "../model/Event.Model.js";
 import Student from "../model/student.model.js";
+import { v2 as cloudinary } from "cloudinary";
+import multer from "multer"; // For handling multipart form data
 
-const createEvent = async(req,res) =>{
+// Multer setup for file upload
+const storage = multer.memoryStorage(); // Store file in memory buffer
+export const upload = multer({ storage });
+
+
+
+const createEvent = async (req, res) => {
+    console.log("Request body:", req.body); 
+  
+    cloudinary.config({
+      cloud_name: process.env.CLOUD_NAME,
+      api_key: process.env.CLOUDINARY_API_KEY,
+      api_secret: process.env.CLOUDINARY_API_SECRET,
+    });
+  
     try {
-        //get data from body
-        const {title,description,eventImg,date,location, createdBy} = req.body;
-        //check if all the required data are submitted
-        if(!title){
-            return res.status(400).json({message:"title is required"})
-        }
-        if(!description){
-            return res.status(400).json({message:"description is required"})
-        }
-        if(!date){
-            return res.status(400).json({message:"date is required"})
-        }
-        if(!location){
-            return res.status(400).json({message:"location is required"})
-        }
-
-        const studentExists = await Student.findById(createdBy);
-        if (!studentExists) {
-            return res.status(404).json({ error: "Student not found" });
-        }
-
-        //add data in mongodb
-        const event = new Event({
-            title:title,
-            description:description,
-            eventImg:eventImg,
-            date:date,
-            location:location,
-            createdBy: createdBy
-        })
-        //save data in mongodb
-        await event.save()
-        console.log(event);
-        
-
-        //give response
-        res.status(201).json({message:"Event created successfully"})
-
-        
+      // Get data from body
+      const { title, description, eventImg, date, location, createdBy } = req.body;
+  
+      // Validate required fields
+      if (!title) return res.status(400).json({ message: "Title is required" });
+      if (!description) return res.status(400).json({ message: "Description is required" });
+      if (!date) return res.status(400).json({ message: "Date is required" });
+      if (!location) return res.status(400).json({ message: "Location is required" });
+      if (!createdBy) return res.status(400).json({ message: "createdBy (student ID) is required" });
+  
+      // Check if the student exists
+      const studentExists = await Student.findById(createdBy);
+      if (!studentExists) return res.status(404).json({ error: "Student not found" });
+  
+      // Handle image upload to Cloudinary
+      let ImageUrl = null;
+      if (req.file) {
+        const result = await new Promise((resolve, reject) => {
+          cloudinary.uploader.upload_stream({ resource_type: 'image' }, (error, result) => {
+            if (error) {
+              console.error("Cloudinary Upload Error:", error);
+              return reject(error);
+            }
+            resolve(result);
+          }).end(req.file.buffer);
+        });
+  
+        ImageUrl = result.secure_url;
+      }
+  
+      if (!req.file && !eventImg) {
+        return res.status(400).json({ message: "Event image is required" });
+      }
+  
+      // Add event to MongoDB
+      const event = new Event({
+        title,
+        description,
+        date,
+        location,
+        createdBy,
+        eventImg: ImageUrl || eventImg, // Use Cloudinary URL if available, else use provided URL
+      });
+  
+      // Save the event
+      await event.save();
+  
+      // Respond with success
+      res.status(201).json({ message: "Event created successfully", event });
     } catch (error) {
-        console.log("Error while Creating Event ",error);
-        res.status(500).send({message:"Internal Server Error"});
+      console.log("Error while Creating Event", error);
+      res.status(500).send({ message: "Internal Server Error" });
     }
-}
+  };
+  
 
 const getEvents = async (req,res)=>{
     try {

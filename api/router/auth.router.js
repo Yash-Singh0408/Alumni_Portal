@@ -1,9 +1,10 @@
 import express from 'express';
-import { signup , signin, signout } from '../controller/auth.controller.js';
+import { signup , signin, signout, upload } from '../controller/auth.controller.js';
 
 const router = express.Router();
 
-router.post('/signup',signup);
+// Wrap your controller with multer middleware
+router.post("/signup", upload.single("profileImage"), signup);
 router.post('/signin',signin);
 router.post('signout',signout)
 

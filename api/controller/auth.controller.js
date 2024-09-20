@@ -1,6 +1,13 @@
 import bcrypt from "bcrypt";
 import Student from "../model/student.model.js";
 import jwt from "jsonwebtoken";
+import { v2 as cloudinary } from "cloudinary";
+import multer from "multer"; // For handling multipart form data
+
+// Multer setup for file upload
+const storage = multer.memoryStorage(); // Store file in memory buffer
+export const upload = multer({ storage });
+
 
 // Signup
 export const signup = async (req, res) => {
@@ -16,6 +23,17 @@ export const signup = async (req, res) => {
     batch,
   } = req.body;
 
+  console.log("request",req.body); 
+  console.log("cloud details",process.env.CLOUD_NAME)
+  console.log("cloud details",process.env.CLOUDINARY_API_KEY)
+  console.log("cloud details",process.env.CLOUDINARY_API_SECRET)
+
+  cloudinary.config({
+    cloud_name: process.env.CLOUD_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET,
+  });
+
   try {
     // Check if the email is already in use
     const existingStudent = await Student.findOne({ email });
@@ -25,8 +43,28 @@ export const signup = async (req, res) => {
         .json({ success: false, message: "Email already in use" });
     }
 
-    // Hash the password
-    const hashedPassword = await bcrypt.hash(password, 10);
+   // Hash the password only if it's not undefined or null
+
+  const hashedPassword = await bcrypt.hash(password, 10);
+
+
+
+    // Handle image upload to Cloudinary
+    let profileImageUrl = null;
+    if (req.file) {
+      const result = await new Promise((resolve, reject) => {
+        cloudinary.uploader.upload_stream({ resource_type: 'image' }, (error, result) => {
+          if (error) {
+            return reject(error);
+          }
+          resolve(result);
+        }).end(req.file.buffer);
+      });
+
+      profileImageUrl = result.secure_url;
+    }
+
+    console.log("profile image url",profileImageUrl)
 
     // Create new student with required fields
     const newStudent = new Student({
@@ -39,6 +77,7 @@ export const signup = async (req, res) => {
       yearOfPassing,
       course,
       batch,
+      profile: profileImageUrl
     });
 
     // Save the student to the database
@@ -110,3 +149,72 @@ export const signout = async (req, res) => {
     }
   };
   
+
+
+// Signup controller
+// export const signup = async (req, res) => {
+//   const { name, email, password, phone, skills, workingAt, yearOfPassing, course, batch } = req.body;
+
+//     console.log("request",req.body); 
+//     console.log("cloud details",process.env.CLOUD_NAME)
+//     console.log("cloud details",process.env.CLOUDINARY_API_KEY)
+//     console.log("cloud details",process.env.CLOUDINARY_API_SECRET)
+
+//     cloudinary.config({
+//       cloud_name: process.env.CLOUD_NAME,
+//       api_key: process.env.CLOUDINARY_API_KEY,
+//       api_secret: process.env.CLOUDINARY_API_SECRET,
+//     });
+  
+
+//   try {
+//     // Check if the email is already in use
+//     const existingStudent = await Student.findOne({ email });
+//     if (existingStudent) {
+//       return res.status(400).json({ success: false, message: "Email already in use" });
+//     }
+
+//     // Hash the password
+//     const hashedPassword = await bcrypt.hash(password, 10);
+
+//     // Handle image upload to Cloudinary
+//     let profileImageUrl = null;
+//     if (req.file) {
+//       const result = await new Promise((resolve, reject) => {
+//         cloudinary.uploader.upload_stream({ resource_type: 'image' }, (error, result) => {
+//           if (error) {
+//             return reject(error);
+//           }
+//           resolve(result);
+//         }).end(req.file.buffer);
+//       });
+
+//       profileImageUrl = result.secure_url;
+//     }
+
+//     console.log("profile image url",profileImageUrl)
+
+//     // Create new student
+//     const newStudent = new Student({
+//       name,
+//       email,
+//       password: hashedPassword,
+//       phone,
+//       skills,
+//       workingAt,
+//       yearOfPassing,
+//       course,
+//       batch,
+//       profileImage: profileImageUrl, // store image URL
+//     });
+
+//     // Save the student to the database
+//     await newStudent.save();
+
+//     res.status(201).json({ success: true, message: "Student registered successfully" });
+//   } catch (error) {
+//     console.error("Error during signup:", error);
+//     res.status(500).json({ success: false, message: "Server error" });
+//   }
+// };
+
