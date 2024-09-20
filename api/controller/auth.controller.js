@@ -3,7 +3,7 @@ import Student from "../model/student.model.js";
 
 // Signup
 export const signup = async (req, res) => {
-  const { name, email, password, phone, workingAt, yearOfPassing, course, batch } = req.body;
+  const { name, email, password, phone, skills, workingAt, yearOfPassing, course, batch } = req.body;
 
   try {
     // Check if the email is already in use
@@ -23,10 +23,11 @@ export const signup = async (req, res) => {
       email,
       password: hashedPassword,
       phone,
-      workingAt, // Required field
-      yearOfPassing, // Required field
-      course, // Required field
-      batch, // Required field
+      skills, // Ensure skills are passed correctly here
+      workingAt,
+      yearOfPassing,
+      course,
+      batch,
     });
 
     // Save the student to the database
