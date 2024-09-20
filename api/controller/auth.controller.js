@@ -64,26 +64,35 @@ export const signin = async (req, res) => {
         .status(400)
         .json({ success: false, message: "Student dont exist" });
     }
-    // hasedd password matching
+    // Compare the provided password with the hashed password in the DB
     const isMatch = await bcrypt.compare(password, validStudent.password);
     if (!isMatch) {
       return res
         .status(400)
         .json({ success: false, message: "Invalid credentials" });
     }
-    //    Create a Jwt token
-    const token = jwt.sign({ _id:validStudent._id},process.env.JWT_SECRET)
-    const { password: pass , ...rest} = validStudent._doc;
-    res.cookie("access_token",token,{
-        httpOnly:true,
-        expires: new Date(Date.now()+ 24 * 60 * 60 * 1000)
-    })
-    .status(200)
-    .json(rest);
-  } catch (error) {
-    console.log(error);
-  }
-};
+     // Generate JWT token
+      const token = jwt.sign({ _id: validStudent._id }, process.env.JWT_SECRET, {
+       expiresIn: '1d' // Token expires in 1 day
+      });
+
+  // Destructure validStudent and remove the password field
+  const { password: pass, ...rest } = validStudent._doc;
+
+  // Set the cookie with the JWT token
+  res.cookie("access_token", token, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production', // Secure flag for HTTPS in production
+    expires: new Date(Date.now() + 24 * 60 * 60 * 1000), // Cookie expires in 1 day
+  })
+  .status(200)
+  .json({ success: true, student: rest });
+
+} catch (error) {
+  console.error("Signin error:", error);
+  res.status(500).json({ success: false, message: "Server error" });
+}
+}
 
 // Signout
 export const signout = async (req, res) => {
