@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import axios from 'axios'
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 
 export default function Signup() {
   const [formData, setFormData] = useState({
@@ -256,6 +256,14 @@ export default function Signup() {
               >
                 Sign Up
               </button>
+              <div className="mt-6">
+            <p className="text-center text-sm text-gray-600">
+              Already have an account?{' '}
+              <a href="login" className="font-medium text-blue-600 hover:text-blue-500">
+                Login
+              </a>
+            </p>
+          </div>
             </div>
           </form>
         </div>
