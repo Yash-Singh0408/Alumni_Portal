@@ -39,7 +39,7 @@ export default function Signup() {
       };
 
       // Send POST request to signup API
-      const response = await axios.post('http://localhost:3000/api/auth/signup', updatedFormData);
+      const response = await axios.post(`${baseURL}/api/auth/signup`, updatedFormData);
       console.log(response.data);
       setSuccess(true);
       setError(null);
