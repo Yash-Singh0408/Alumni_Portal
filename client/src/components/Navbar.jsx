@@ -213,11 +213,11 @@ export default function Navbar() {
 
       {/* Mobile Side Navbar with Slide Transition */}
       <div 
-        className={`fixed left-0 top-0 w-64 h-full bg-gray-900 text-white p-4 transition-transform duration-300 ease-in-out transform ${
+        className={` fixed left-0 top-0 w-64 h-full bg-gray-900 text-white p-4 transition-transform duration-300 ease-in-out transform ${
           isOpen ? 'translate-x-0' : '-translate-x-full'
         } md:hidden`}
       >
-        <div className="flex flex-col space-y-4">
+        <div className="  flex flex-col space-y-4">
           <Link to="/" className="text-2xl font-bold mr-8">
             ALUMNI
           </Link>
@@ -246,3 +246,4 @@ export default function Navbar() {
     </nav>
   );
 }
+
