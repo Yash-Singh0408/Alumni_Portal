@@ -54,9 +54,60 @@ const getEvents = async (req,res)=>{
         res.json(events);
     } catch (error) {
         console.log( "Error while getting Events ",error);
+        res.status(500).send({message:"Internal Server Error"});
 
         
     }
 }
 
-export {createEvent, getEvents}
+const updateEvent = async (req,res)=>{
+    try {
+        //get event from id
+        const eventId = req.params.id
+
+        //check if event exist
+        const event = await Event.findById(eventId);
+        if (!event) {
+            return res.status(404).json({ error: "Event not found" });
+            }
+
+        //get changes from body
+        const update = req.body
+
+        //update event
+        await Event.updateOne(
+            {"_id": eventId},
+            {$set: update}
+        )
+
+        //give response
+        res.status(200).json({ message: "Event updated successfully" });
+    } catch (error) {
+        console.log( "Error while updating Event ",error);
+        res.status(500).send({message:"Internal Server Error"});
+    }
+}
+
+const deleteEvent = async (req,res) =>{
+    try {
+        //get event id
+        const eventId = req.params.id
+        //check if event exist
+        const event = await Event.findById(eventId);
+        if (!event) {
+            return res.status(404).json({ error: "Event not found" });
+        }
+        //delete event
+        await Event.deleteOne({"_id": eventId})
+        
+        //notify user
+        res.status(200).json({ message: "Event deleted successfully" });
+
+    } catch (error) {
+        console.log("Error while Deleteing event");
+        res.status(500).send({message:"Internal Server Error"});
+        
+    }
+}
+
+export {createEvent, getEvents, updateEvent, deleteEvent}
