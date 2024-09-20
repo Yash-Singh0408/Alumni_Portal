@@ -94,12 +94,12 @@ export const signin = async (req, res) => {
 }
 }
 
-// Signout
 export const signout = async (req, res) => {
     try {
       // Clear the access token from cookies
       res.clearCookie("access_token", {
         httpOnly: true,
+        secure: process.env.NODE_ENV === 'production', // Ensure it's secure in production
       });
   
       // Send success response
