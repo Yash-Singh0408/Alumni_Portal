@@ -39,7 +39,7 @@ export default function Login(){
       setSuccess(true);
       setError(null);
 
-      navigate('ADD_PATH');
+      navigate('/dashboard');
 
     } catch (error) {
       if (error.response) {

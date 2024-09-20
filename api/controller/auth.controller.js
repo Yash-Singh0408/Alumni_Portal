@@ -3,6 +3,7 @@ import Student from "../model/student.model.js";
 import { v2 as cloudinary } from "cloudinary";
 import multer from "multer"; // For handling multipart form data
 import nodemailer from "nodemailer"
+import jwt from "jsonwebtoken"
 
 // Cloudinary config
 

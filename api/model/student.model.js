@@ -13,7 +13,7 @@ const studentSchema = new mongoose.Schema({
   description: { type: String },
   yearOfPassing: { type: Number, required:true }, // Year of graduation
   course: { type: String, required:true }, // Course of study
-  batch: { type: String, required:true }, // Batch year or name
+  batch: { type: String,  }, // Batch year or name
   isEmailVerified: { type: Boolean, default: false }, // Email verification status
   isAdminVerified: { type: Boolean, default: false }, // Admin verification status
   isAlumni: { type: Boolean, default: false },
