@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import axios from 'axios'
 
 export default function Signup() {
   const [formData, setFormData] = useState({
@@ -16,6 +17,9 @@ export default function Signup() {
     batch: ""
   })
 
+  const [error, setError] = useState(null)
+  const [success, setSuccess] = useState(false)
+
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target
     setFormData({
@@ -24,10 +28,27 @@ export default function Signup() {
     })
   }
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
-    console.log(formData)
-    // Handle signup logic here
+    try {
+      // Convert skills to an array by splitting the string
+      const updatedFormData = {
+        ...formData,
+        skills: formData.skills.split(",").map(skill => skill.trim()),  // Assuming skills are comma-separated
+        yearOfPassing: parseInt(formData.yearOfPassing, 10),  // Convert yearOfPassing to a number
+      }
+
+      // Send the POST request to the API
+      const response = await axios.post('http://localhost:3000/api/auth/signup', updatedFormData)
+
+      console.log(response.data)  // You can log the response to see what you get back
+      setSuccess(true)
+      setError(null)
+    } catch (error) {
+      console.error(error)
+      setError(error.response?.data?.message || 'An error occurred')
+      setSuccess(false)
+    }
   }
 
   return (
@@ -38,6 +59,8 @@ export default function Signup() {
 
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
         <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
+          {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
+          {success && <p className="text-green-500 text-sm mb-4">Signup successful!</p>}
           <form className="space-y-6" onSubmit={handleSubmit}>
             {/* Name and Email fields in one row */}
             <div className="flex space-x-4">
@@ -107,7 +130,7 @@ export default function Signup() {
             <div className="flex space-x-4">
               <div className="w-1/2">
                 <label htmlFor="skills" className="block text-sm font-medium text-gray-700">
-                  Skills
+                  Skills (comma separated)
                 </label>
                 <input
                   id="skills"
@@ -157,6 +180,7 @@ export default function Signup() {
                   id="workingAt"
                   name="workingAt"
                   type="text"
+                  required
                   value={formData.workingAt}
                   onChange={handleChange}
                   className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
@@ -210,13 +234,26 @@ export default function Signup() {
               />
             </div>
 
-            {/* Submit button */}
+            {/* Description field */}
+            <div>
+              <label htmlFor="description" className="block text-sm font-medium text-gray-700">
+                Description
+              </label>
+              <textarea
+                id="description"
+                name="description"
+                value={formData.description}
+                onChange={handleChange}
+                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+              />
+            </div>
+
             <div>
               <button
                 type="submit"
                 className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
               >
-                Sign up
+                Sign Up
               </button>
             </div>
           </form>
