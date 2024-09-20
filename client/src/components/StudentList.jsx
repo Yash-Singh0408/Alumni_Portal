@@ -3,15 +3,13 @@ import { Search, Menu, User, ChevronLeft, ChevronRight, Check, X, Filter } from 
 import Footer from './Footer'
 import Navbar from './Navbar'
 
-const baseURL = "http://localhost:3000";
-
 const avatarColors = {
   yellow: 'bg-yellow-500',
   purple: 'bg-purple-500',
   teal: 'bg-teal-500',
 }
 
-export default function List() {
+export default function StudentList() {
   const [students, setStudents] = useState([])
   const [currentPage, setCurrentPage] = useState(1)
   const [rowsPerPage, setRowsPerPage] = useState(10)
@@ -25,14 +23,13 @@ export default function List() {
 
   useEffect(() => {
     fetchStudents()
-  }, [students])
+  }, [])
 
   const fetchStudents = () => {
-    fetch('http://localhost:3000/api/auth/getusers')
+    fetch('http://localhost:3000/api/auth/getstudents')
       .then((response) => response.json())
       .then((data) => {
         setStudents(data)
-        // Extract unique courses and batches
         const uniqueCourses = [...new Set(data.map(student => student.course))]
         const uniqueBatches = [...new Set(data.map(student => student.batch))]
         setCourses(uniqueCourses)
@@ -124,19 +121,19 @@ export default function List() {
   }
 
   const handleDelete = async (studentId) => {
-    if (window.confirm('Are you sure you want to delete this user?')) {
+    if (window.confirm('Are you sure you want to delete this student?')) {
       try {
         const response = await fetch(`http://localhost:3000/api/auth/student/${studentId}`, {
-          method: 'POST',
+          method: 'DELETE',
         })
 
         if (!response.ok) {
-          throw new Error('Failed to delete user')
+          throw new Error('Failed to delete student')
         }
 
         setStudents(prevStudents => prevStudents.filter(student => student._id !== studentId))
       } catch (error) {
-        console.error('Error deleting user:', error)
+        console.error('Error deleting student:', error)
       }
     }
   }
