@@ -6,7 +6,7 @@ import { FaLock, FaEnvelope, FaEye, FaEyeSlash } from 'react-icons/fa';
 
 const baseURL = "http://localhost:3000";
 
-export default function () {
+export default function Login(){
   const [formData, setFormData] = useState({
     email: "",
     password: ""
