@@ -1,5 +1,5 @@
 import express from 'express';
-import { signup , signin, signout, upload, getStudents, verifyStudent, updateStudent } from '../controller/auth.controller.js';
+import { signup , signin, signout, upload, getStudents, verifyStudent, updateStudent, deleteStudent } from '../controller/auth.controller.js';
 
 const router = express.Router();
 
@@ -10,6 +10,7 @@ router.post('/signin',signin);
 router.post('/signout',signout)
 router.get('/getusers',getStudents)
 router.post('/verify/:id',verifyStudent)
-router.post('/updateuser/:id',updateStudent)
+router.put('/student/:id',updateStudent)
+router.post('/student/:id',deleteStudent)
 
 export default router;
