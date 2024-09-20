@@ -1,56 +1,54 @@
-import { useState } from 'react'
-import axios from 'axios'
-import { useNavigate } from 'react-router-dom'
+import { useState } from 'react';
+import axios from 'axios';
+import { Link } from 'react-router-dom';
 
 export default function Signup() {
   const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    password: "",
-    phone: "",
-    skills: "",
+    name: '',
+    email: '',
+    password: '',
+    phone: '',
+    skills: '',
     working: false,
-    workingAt: "",
-    experience: "",
-    description: "",
-    yearOfPassing: "",
-    course: "",
-    batch: ""
-  })
+    workingAt: '',
+    experience: '',
+    description: '',
+    yearOfPassing: '',
+    course: '',
+    batch: '',
+  });
 
-  const [error, setError] = useState(null)
-  const [success, setSuccess] = useState(false)
+  const [error, setError] = useState(null);
+  const [success, setSuccess] = useState(false);
 
   const handleChange = (e) => {
-    const { name, value, type, checked } = e.target
+    const { name, value, type, checked } = e.target;
     setFormData({
       ...formData,
-      [name]: type === "checkbox" ? checked : value
-    })
-  }
+      [name]: type === 'checkbox' ? checked : value,
+    });
+  };
 
   const handleSubmit = async (e) => {
-    e.preventDefault()
+    e.preventDefault();
     try {
-      // Convert skills to an array by splitting the string
       const updatedFormData = {
         ...formData,
-        skills: formData.skills.split(",").map(skill => skill.trim()),  // Assuming skills are comma-separated
-        yearOfPassing: parseInt(formData.yearOfPassing, 10),  // Convert yearOfPassing to a number
-      }
+        skills: formData.skills.split(',').map((skill) => skill.trim()), // Split skills string into an array
+        yearOfPassing: parseInt(formData.yearOfPassing, 10), // Ensure yearOfPassing is a number
+      };
 
-      // Send the POST request to the API
-      const response = await axios.post('http://localhost:3000/api/auth/signup', updatedFormData)
-
-      console.log(response.data)  // You can log the response to see what you get back
-      setSuccess(true)
-      setError(null)
+      // Send POST request to signup API
+      const response = await axios.post('http://localhost:3000/api/auth/signup', updatedFormData);
+      console.log(response.data);
+      setSuccess(true);
+      setError(null);
     } catch (error) {
-      console.error(error)
-      setError(error.response?.data?.message || 'An error occurred')
-      setSuccess(false)
+      console.error(error);
+      setError(error.response?.data?.message || 'An error occurred');
+      setSuccess(false);
     }
-  }
+  };
 
   return (
     <div className="min-h-screen bg-gray-100 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
@@ -63,12 +61,10 @@ export default function Signup() {
           {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
           {success && <p className="text-green-500 text-sm mb-4">Signup successful!</p>}
           <form className="space-y-6" onSubmit={handleSubmit}>
-            {/* Name and Email fields in one row */}
+            {/* Name and Email fields */}
             <div className="flex space-x-4">
               <div className="w-1/2">
-                <label htmlFor="name" className="block text-sm font-medium text-gray-700">
-                  Name
-                </label>
+                <label htmlFor="name" className="block text-sm font-medium text-gray-700">Name</label>
                 <input
                   id="name"
                   name="name"
@@ -80,9 +76,7 @@ export default function Signup() {
                 />
               </div>
               <div className="w-1/2">
-                <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-                  Email
-                </label>
+                <label htmlFor="email" className="block text-sm font-medium text-gray-700">Email</label>
                 <input
                   id="email"
                   name="email"
@@ -95,12 +89,10 @@ export default function Signup() {
               </div>
             </div>
 
-            {/* Password and Phone fields in one row */}
+            {/* Password and Phone fields */}
             <div className="flex space-x-4">
               <div className="w-1/2">
-                <label htmlFor="password" className="block text-sm font-medium text-gray-700">
-                  Password
-                </label>
+                <label htmlFor="password" className="block text-sm font-medium text-gray-700">Password</label>
                 <input
                   id="password"
                   name="password"
@@ -112,9 +104,7 @@ export default function Signup() {
                 />
               </div>
               <div className="w-1/2">
-                <label htmlFor="phone" className="block text-sm font-medium text-gray-700">
-                  Phone
-                </label>
+                <label htmlFor="phone" className="block text-sm font-medium text-gray-700">Phone</label>
                 <input
                   id="phone"
                   name="phone"
@@ -127,12 +117,10 @@ export default function Signup() {
               </div>
             </div>
 
-            {/* Skills and Experience fields in one row */}
+            {/* Skills and Experience fields */}
             <div className="flex space-x-4">
               <div className="w-1/2">
-                <label htmlFor="skills" className="block text-sm font-medium text-gray-700">
-                  Skills (comma separated)
-                </label>
+                <label htmlFor="skills" className="block text-sm font-medium text-gray-700">Skills (comma separated)</label>
                 <input
                   id="skills"
                   name="skills"
@@ -143,9 +131,7 @@ export default function Signup() {
                 />
               </div>
               <div className="w-1/2">
-                <label htmlFor="experience" className="block text-sm font-medium text-gray-700">
-                  Experience (in years)
-                </label>
+                <label htmlFor="experience" className="block text-sm font-medium text-gray-700">Experience (in years)</label>
                 <input
                   id="experience"
                   name="experience"
@@ -157,8 +143,8 @@ export default function Signup() {
               </div>
             </div>
 
-            {/* Working checkbox and WorkingAt field */}
-            {/* <div className="flex items-center">
+            {/* Currently Working Checkbox */}
+            <div className="flex items-center">
               <input
                 id="working"
                 name="working"
@@ -167,16 +153,13 @@ export default function Signup() {
                 onChange={handleChange}
                 className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
               />
-              <label htmlFor="working" className="ml-2 block text-sm text-gray-900">
-                Currently working?
-              </label>
-            </div> */}
+              <label htmlFor="working" className="ml-2 block text-sm text-gray-900">Currently working?</label>
+            </div>
 
+            {/* Conditional "Working at / College name" field */}
             {formData.working && (
               <div>
-                <label htmlFor="workingAt" className="block text-sm font-medium text-gray-700">
-                  Working at / college name
-                </label>
+                <label htmlFor="workingAt" className="block text-sm font-medium text-gray-700">Working at / College name</label>
                 <input
                   id="workingAt"
                   name="workingAt"
@@ -189,12 +172,10 @@ export default function Signup() {
               </div>
             )}
 
-            {/* Year of Passing and Course fields in one row */}
+            {/* Year of Passing and Course fields */}
             <div className="flex space-x-4">
               <div className="w-1/2">
-                <label htmlFor="yearOfPassing" className="block text-sm font-medium text-gray-700">
-                  Year of Passing
-                </label>
+                <label htmlFor="yearOfPassing" className="block text-sm font-medium text-gray-700">Year of Passing</label>
                 <input
                   id="yearOfPassing"
                   name="yearOfPassing"
@@ -204,11 +185,8 @@ export default function Signup() {
                   className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                 />
               </div>
-
               <div className="w-1/2">
-                <label htmlFor="course" className="block text-sm font-medium text-gray-700">
-                  Course
-                </label>
+                <label htmlFor="course" className="block text-sm font-medium text-gray-700">Course</label>
                 <input
                   id="course"
                   name="course"
@@ -222,9 +200,7 @@ export default function Signup() {
 
             {/* Batch field */}
             <div>
-              <label htmlFor="batch" className="block text-sm font-medium text-gray-700">
-                Batch
-              </label>
+              <label htmlFor="batch" className="block text-sm font-medium text-gray-700">Batch</label>
               <input
                 id="batch"
                 name="batch"
@@ -237,9 +213,7 @@ export default function Signup() {
 
             {/* Description field */}
             <div>
-              <label htmlFor="description" className="block text-sm font-medium text-gray-700">
-                Description
-              </label>
+              <label htmlFor="description" className="block text-sm font-medium text-gray-700">Description</label>
               <textarea
                 id="description"
                 name="description"
@@ -249,6 +223,7 @@ export default function Signup() {
               />
             </div>
 
+            {/* Submit Button */}
             <div>
               <button
                 type="submit"
@@ -256,10 +231,20 @@ export default function Signup() {
               >
                 Sign Up
               </button>
+
+              {/* Login Link */}
+              <div className="mt-6">
+                <p className="text-center text-sm text-gray-600">
+                  Already have an account?{' '}
+                  <Link to="/login" className="font-medium text-blue-600 hover:text-blue-500">
+                    Log in
+                  </Link>
+                </p>
+              </div>
             </div>
           </form>
         </div>
       </div>
     </div>
-  )
+  );
 }

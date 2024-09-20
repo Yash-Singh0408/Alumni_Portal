@@ -1,5 +1,7 @@
 import { useState } from 'react';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
+import Cookies from 'js-cookie';  // Import js-cookie to handle cookies
 
 export default function Signin() {
   const [formData, setFormData] = useState({
@@ -9,6 +11,7 @@ export default function Signin() {
 
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(false);
+  const navigate = useNavigate();  // To handle navigation after success
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -22,14 +25,32 @@ export default function Signin() {
     e.preventDefault();
     try {
       // Send the POST request to the API
-      const response = await axios.post('http://localhost:3000/api/auth/signin', formData);
+      const response = await axios.post('http://localhost:3000/api/auth/signin', formData, {
+        withCredentials: true,  // Allow cookies to be sent/received
+      });
+      console.log(response.data);
+      // Assuming the token is sent as a cookie from the backend
 
-      console.log(response.data);  // Log the response to see what you get back
+      // Optionally, you can store the token explicitly in cookies if needed
+      const token = response.data.token;
+      Cookies.set('accessToken', token, { secure: true, sameSite: 'Strict' });
+
       setSuccess(true);
       setError(null);
+
+      // Navigate to home after successful sign in
+      navigate('/');
     } catch (error) {
-      console.error(error);
-      setError(error.response?.data?.message || 'An error occurred');
+      if (error.response) {
+        // Server responded with a status outside the 2xx range
+        setError(error.response.data.message || 'Invalid credentials');
+      } else if (error.request) {
+        // No response was received from the server
+        setError('No response from server');
+      } else {
+        // Something went wrong during request
+        setError('An error occurred');
+      }
       setSuccess(false);
     }
   };
@@ -91,7 +112,7 @@ export default function Signin() {
           <div className="mt-6">
             <p className="text-center text-sm text-gray-600">
               Don&apos;t have an account?{' '}
-              <a href="signup" className="font-medium text-blue-600 hover:text-blue-500">
+              <a href="/signup" className="font-medium text-blue-600 hover:text-blue-500">
                 Sign up
               </a>
             </p>

@@ -11,10 +11,10 @@ const navigate =useNavigate();
     <div className="min-h-screen bg-gradient-to-br from-blue-100 via-white to-green-100 p-4">
       <header className="flex justify-between items-center mb-8">
         <div className=" max-w-24 "><img className='w-full' src="./logo.png" alt="" /></div>
-        {/* <div className="flex gap-2 items-center">
-          <a href="/login" className="text-sm font-medium text-gray-600 hover:text-gray-800">Login</a>
-          <a href="/signup" className="text-sm font-medium bg-purple-100 text-purple-800 px-3 py-1 rounded-full hover:bg-purple-200">Sign up</a>
-        </div> */}
+        <div className="flex gap-2 items-center">
+          <button onClick={()=> navigate('/login')} className="text-sm font-medium text-gray-600 hover:text-gray-800">Login</button>
+          <button onClick={()=> navigate('/signup')} className="text-sm font-medium bg-purple-100 text-purple-800 px-3 py-1 rounded-full hover:bg-purple-200">Sign up</button>
+        </div>
       </header>
 
       <div className="bg-purple-100 rounded-full py-2 px-4 mb-8 flex items-center justify-center w-full max-w-lg mx-auto">
@@ -54,8 +54,8 @@ const navigate =useNavigate();
           <FeatureCard icon={<Users2 className="w-8 h-8 sm:w-12 sm:h-12 md:h-auto md:w-auto" />} title="Strengthen the Community" discription=" Foster a vibrant community where students and alumni can share experiences, mentor each other, and collaborate on projects and events." />
         </div>
       </main>
-    </div>
     <Footer/>
+    </div>
     </>
   )
 }
