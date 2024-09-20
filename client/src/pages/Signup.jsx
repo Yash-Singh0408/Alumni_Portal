@@ -144,7 +144,7 @@ export default function Signup() {
             </div>
 
             {/* Currently Working Checkbox */}
-            {/* <div className="flex items-center">
+            <div className="flex items-center">
               <input
                 id="working"
                 name="working"
@@ -154,7 +154,7 @@ export default function Signup() {
                 className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
               />
               <label htmlFor="working" className="ml-2 block text-sm text-gray-900">Currently working?</label>
-            </div> */}
+            </div>
 
             {/* Conditional "Working at / College name" field */}
             {formData.working && (
