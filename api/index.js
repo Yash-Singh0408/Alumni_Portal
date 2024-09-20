@@ -28,7 +28,7 @@ connectDB();
 //Routes
 app.use('/api/student',studentRouter)
 app.use('/api/auth',authRouter)
-app.use('/api/admin',eventRouter)
+app.use('/api/event',eventRouter)
 app.use('/api/admin',adminRouter)
 
 //Listining
