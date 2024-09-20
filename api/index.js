@@ -11,7 +11,7 @@ import cors from 'cors'
 const app = express();
 
 app.use(cors({
-    origin: 'http://localhost:5173', // Replace with your frontend URL
+    origin: 'http://127.0.0.1:5500', // Replace with your frontend URL
     credentials: true // This is necessary to allow cookies
   }));
 
@@ -28,7 +28,7 @@ connectDB();
 //Routes
 app.use('/api/student',studentRouter)
 app.use('/api/auth',authRouter)
-app.use('/api/admin',eventRouter)
+app.use('/api/event',eventRouter)
 app.use('/api/admin',adminRouter)
 
 //Listining
