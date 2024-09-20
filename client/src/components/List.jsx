@@ -3,6 +3,8 @@ import { Search, Menu, User } from 'lucide-react'
 import Footer from './Footer' 
 import Navbar from './Navbar'
 
+const baseURL = "http://localhost:3000";
+
 const avatarColors = {
   yellow: 'bg-yellow-500',
   purple: 'bg-purple-500',
@@ -14,7 +16,7 @@ export default function List() {
 
   // Fetch students data from the API
   useEffect(() => {
-    fetch('https://alumni-portal-pof.vercel.app/api/v1/user/students')
+    fetch(`${baseURL}/api/auth/getusers`)
       .then((response) => response.json())
       .then((data) => {
         setStudents(data) // Assuming the API response is an array of students
