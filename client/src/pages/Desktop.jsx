@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
+import PropTypes from 'prop-types';
 import axios from 'axios';
 import { FaGraduationCap, FaBriefcase, FaCalendarAlt } from 'react-icons/fa';
 import Navbar from '../components/Navbar';
@@ -43,7 +44,7 @@ const Desktop = () => {
           <header className="bg-white rounded-lg shadow-sm p-6 mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center">
             <div>
               <h1 className="text-3xl font-bold text-gray-800">Good Morning, Username!</h1>
-              <p className="text-gray-600">Welcome back to the Alumni Network! Here's what's happening today.</p>
+              <p className="text-gray-600">Welcome back to the Alumni Network! Here&apos;s what&apos;s happening today.</p>
             </div>
             <div className="mt-4 sm:mt-0 flex items-center">
               <img
@@ -90,17 +91,16 @@ const Desktop = () => {
                   events.map((event, index) => (
                     <EventCard
                       key={index}
-                      image={event.eventImg ? event.eventImg : "/images/Transparency.png"}  // Use 'image' prop instead of 'name'
+                      image={event.eventImg ? event.eventImg : "/images/Transparency.png"}
                       title={event.title}
                       description={event.description}
-                      date={event.date}                              // Add the date field
-                      location={event.location}                      // Add the location field
+                      date={event.date}
+                      location={event.location}
                     />
                   ))
                 ) : (
                   <p>No events yet</p>
                 )}
-
               </div>
             </div>
 
@@ -130,6 +130,7 @@ const Desktop = () => {
   );
 };
 
+// Prop types for QuickAccessButton
 const QuickAccessButton = ({ icon, title, description }) => (
   <div className="bg-white rounded-lg shadow-sm p-6 flex items-start">
     <div className="text-blue-500 text-3xl mr-4">{icon}</div>
@@ -140,6 +141,13 @@ const QuickAccessButton = ({ icon, title, description }) => (
   </div>
 );
 
+QuickAccessButton.propTypes = {
+  icon: PropTypes.node.isRequired,
+  title: PropTypes.string.isRequired,
+  description: PropTypes.string.isRequired,
+};
+
+// Prop types for EventCard
 const EventCard = ({ image, title, description, date, location }) => {
   // Fallback image
   const fallbackImage = '/Transparency.png';
@@ -147,7 +155,7 @@ const EventCard = ({ image, title, description, date, location }) => {
   return (
     <div className="bg-white rounded-lg shadow-sm overflow-hidden">
       <img
-        src={image || fallbackImage} // Use fallback if image is falsy
+        src={image || fallbackImage}
         alt={title}
         width={300}
         height={200}
@@ -162,8 +170,15 @@ const EventCard = ({ image, title, description, date, location }) => {
   );
 };
 
+EventCard.propTypes = {
+  image: PropTypes.string,
+  title: PropTypes.string.isRequired,
+  description: PropTypes.string.isRequired,
+  date: PropTypes.string.isRequired,
+  location: PropTypes.string.isRequired,
+};
 
-
+// Prop types for AlumniConnectionItem
 const AlumniConnectionItem = ({ name, batch }) => (
   <div className="flex items-center justify-between py-2 border-b last:border-b-0">
     <div className="flex items-center">
@@ -180,5 +195,10 @@ const AlumniConnectionItem = ({ name, batch }) => (
     </button>
   </div>
 );
+
+AlumniConnectionItem.propTypes = {
+  name: PropTypes.string.isRequired,
+  batch: PropTypes.string.isRequired,
+};
 
 export default Desktop;
