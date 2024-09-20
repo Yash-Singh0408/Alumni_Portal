@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import axios from 'axios'
+import { useNavigate } from 'react-router-dom'
 
 export default function Signup() {
   const [formData, setFormData] = useState({
@@ -157,7 +158,7 @@ export default function Signup() {
             </div>
 
             {/* Working checkbox and WorkingAt field */}
-            <div className="flex items-center">
+            {/* <div className="flex items-center">
               <input
                 id="working"
                 name="working"
@@ -169,12 +170,12 @@ export default function Signup() {
               <label htmlFor="working" className="ml-2 block text-sm text-gray-900">
                 Currently working?
               </label>
-            </div>
+            </div> */}
 
             {formData.working && (
               <div>
                 <label htmlFor="workingAt" className="block text-sm font-medium text-gray-700">
-                  Working at
+                  Working at / college name
                 </label>
                 <input
                   id="workingAt"
