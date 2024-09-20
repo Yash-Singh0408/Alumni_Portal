@@ -2,6 +2,7 @@ import bcrypt from "bcrypt";
 import Student from "../model/student.model.js";
 import { v2 as cloudinary } from "cloudinary";
 import multer from "multer"; // For handling multipart form data
+import nodemailer from "nodemailer"
 
 // Cloudinary config
 
@@ -52,6 +53,30 @@ export const signup = async (req, res) => {
 
     console.log("profile image url",profileImageUrl)
 
+    const transporter = nodemailer.createTransport({
+      host: "smtp.ethereal.email",
+      port: 587,
+      secure: false, // true for port 465, false for other ports
+      auth: {
+        user: "maddison53@ethereal.email",
+        pass: "jn7jnAPss4f63QBp6D",
+      },
+    });
+
+    const info = await transporter.sendMail({
+      from: '"Maddison Foo Koch 👻" <maddison53@ethereal.email>', // sender address
+      to: email, // list of receivers
+      subject: 'Verify Your Email',
+        html: \Please click the following link to verify your email: <a href="\${verificationUrl}">\${verificationUrl}</a>\
+
+    });
+  
+    console.log("Message sent: %s", info.messageId);
+
+    if(!isEmailVerified){
+      return res.status(400).json({ success: false, message: "Email not verified"})
+    }
+    
     // Create new student
     const newStudent = new Student({
       name,
