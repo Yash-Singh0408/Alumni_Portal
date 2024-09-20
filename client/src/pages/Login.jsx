@@ -2,8 +2,12 @@ import { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import Cookies from 'js-cookie';  // Import js-cookie to handle cookies
+const baseURL= "http://localhost:3000";
 
 export default function Signin() {
+
+
+
   const [formData, setFormData] = useState({
     email: "",
     password: ""
@@ -25,7 +29,7 @@ export default function Signin() {
     e.preventDefault();
     try {
       // Send the POST request to the API
-      const response = await axios.post('http://localhost:3000/api/auth/signin', formData, {
+      const response = await axios.post(`${baseURL}/api/auth/signin`, formData, {
         withCredentials: true,  // Allow cookies to be sent/received
       });
       console.log(response.data);
