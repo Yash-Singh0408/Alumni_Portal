@@ -1,27 +1,17 @@
-import bcrypt from "bcrypt";
+import bcrypt from "bcrypt"; 
 import Student from "../model/student.model.js";
-import jwt from "jsonwebtoken";
 import { v2 as cloudinary } from "cloudinary";
 import multer from "multer"; // For handling multipart form data
+
+// Cloudinary config
 
 // Multer setup for file upload
 const storage = multer.memoryStorage(); // Store file in memory buffer
 export const upload = multer({ storage });
 
-
-// Signup
+// Signup controller
 export const signup = async (req, res) => {
-  const {
-    name,
-    email,
-    password,
-    phone,
-    skills,
-    workingAt,
-    yearOfPassing,
-    course,
-    batch,
-  } = req.body;
+  const { name, email, password, phone, skills, workingAt, yearOfPassing, course, batch } = req.body;
 
   console.log("request",req.body); 
   console.log("cloud details",process.env.CLOUD_NAME)
@@ -33,21 +23,17 @@ export const signup = async (req, res) => {
     api_key: process.env.CLOUDINARY_API_KEY,
     api_secret: process.env.CLOUDINARY_API_SECRET,
   });
+  
 
   try {
     // Check if the email is already in use
     const existingStudent = await Student.findOne({ email });
     if (existingStudent) {
-      return res
-        .status(400)
-        .json({ success: false, message: "Email already in use" });
+      return res.status(400).json({ success: false, message: "Email already in use" });
     }
 
-   // Hash the password only if it's not undefined or null
-
-  const hashedPassword = await bcrypt.hash(password, 10);
-
-
+    // Hash the password
+    const hashedPassword = await bcrypt.hash(password, 10);
 
     // Handle image upload to Cloudinary
     let profileImageUrl = null;
@@ -66,31 +52,31 @@ export const signup = async (req, res) => {
 
     console.log("profile image url",profileImageUrl)
 
-    // Create new student with required fields
+    // Create new student
     const newStudent = new Student({
       name,
       email,
       password: hashedPassword,
       phone,
-      skills, // Ensure skills are passed correctly here
+      skills,
       workingAt,
       yearOfPassing,
       course,
       batch,
-      profile: profileImageUrl
+      profileImage: profileImageUrl, // store image URL
     });
 
     // Save the student to the database
     await newStudent.save();
-    
-    res
-      .status(201)
-      .json({ success: true, message: "Student registered successfully" });
+
+    res.status(201).json({ success: true, message: "Student registered successfully" });
   } catch (error) {
     console.error("Error during signup:", error);
     res.status(500).json({ success: false, message: "Server error" });
   }
 };
+
+
 
 // Signin
 export const signin = async (req, res) => {
@@ -160,71 +146,30 @@ export const getStudents = async (req,res)=>{
         res.status(500).send({message:"Internal Server Error"});
     }
 }
+
+export const verifyStudent = async (req, res) => {
+  try {
+    const studentId = req.params.id;
+
+    // Find the student by their ID
+    const student = await Student.findById(studentId);
+    if (!student) {
+      return res.status(404).json({ error: "Student not found" });
+    }
+
+    // Update the student to set isAdminVerified to true
+    const update = { isAdminVerified: true };
+
+    // Update the student in the database
+    await Student.updateOne({ _id: studentId }, { $set: update });
+
+    // Return success response
+    res.status(200).json({ message: "Student verified successfully" });
+  } catch (error) {
+    console.error("Error while verifying student:", error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+};
+
+
   
-// Signup controller
-// export const signup = async (req, res) => {
-//   const { name, email, password, phone, skills, workingAt, yearOfPassing, course, batch } = req.body;
-
-//     console.log("request",req.body); 
-//     console.log("cloud details",process.env.CLOUD_NAME)
-//     console.log("cloud details",process.env.CLOUDINARY_API_KEY)
-//     console.log("cloud details",process.env.CLOUDINARY_API_SECRET)
-
-//     cloudinary.config({
-//       cloud_name: process.env.CLOUD_NAME,
-//       api_key: process.env.CLOUDINARY_API_KEY,
-//       api_secret: process.env.CLOUDINARY_API_SECRET,
-//     });
-  
-
-//   try {
-//     // Check if the email is already in use
-//     const existingStudent = await Student.findOne({ email });
-//     if (existingStudent) {
-//       return res.status(400).json({ success: false, message: "Email already in use" });
-//     }
-
-//     // Hash the password
-//     const hashedPassword = await bcrypt.hash(password, 10);
-
-//     // Handle image upload to Cloudinary
-//     let profileImageUrl = null;
-//     if (req.file) {
-//       const result = await new Promise((resolve, reject) => {
-//         cloudinary.uploader.upload_stream({ resource_type: 'image' }, (error, result) => {
-//           if (error) {
-//             return reject(error);
-//           }
-//           resolve(result);
-//         }).end(req.file.buffer);
-//       });
-
-//       profileImageUrl = result.secure_url;
-//     }
-
-//     console.log("profile image url",profileImageUrl)
-
-//     // Create new student
-//     const newStudent = new Student({
-//       name,
-//       email,
-//       password: hashedPassword,
-//       phone,
-//       skills,
-//       workingAt,
-//       yearOfPassing,
-//       course,
-//       batch,
-//       profileImage: profileImageUrl, // store image URL
-//     });
-
-//     // Save the student to the database
-//     await newStudent.save();
-
-//     res.status(201).json({ success: true, message: "Student registered successfully" });
-//   } catch (error) {
-//     console.error("Error during signup:", error);
-//     res.status(500).json({ success: false, message: "Server error" });
-//   }
-// };
-
