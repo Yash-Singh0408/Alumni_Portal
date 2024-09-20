@@ -43,7 +43,7 @@ export const signup = async (req, res) => {
 
     // Save the student to the database
     await newStudent.save();
-
+    
     res
       .status(201)
       .json({ success: true, message: "Student registered successfully" });
