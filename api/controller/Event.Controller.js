@@ -1,79 +1,73 @@
 import Event from "../model/Event.Model.js";
 import Student from "../model/student.model.js";
+import dotenv from 'dotenv';
+dotenv.config();
+
 import { v2 as cloudinary } from "cloudinary";
 import multer from "multer"; // For handling multipart form data
+
+// Cloudinary config
+cloudinary.config({
+  cloud_name: process.env.CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
 
 // Multer setup for file upload
 const storage = multer.memoryStorage(); // Store file in memory buffer
 export const upload = multer({ storage });
 
-
-
 const createEvent = async (req, res) => {
-    console.log("Request body:", req.body); 
-  
-    cloudinary.config({
-      cloud_name: process.env.CLOUD_NAME,
-      api_key: process.env.CLOUDINARY_API_KEY,
-      api_secret: process.env.CLOUDINARY_API_SECRET,
-    });
-  
-    try {
-      // Get data from body
-      const { title, description, eventImg, date, location, createdBy } = req.body;
-  
-      // Validate required fields
-      if (!title) return res.status(400).json({ message: "Title is required" });
-      if (!description) return res.status(400).json({ message: "Description is required" });
-      if (!date) return res.status(400).json({ message: "Date is required" });
-      if (!location) return res.status(400).json({ message: "Location is required" });
-      if (!createdBy) return res.status(400).json({ message: "createdBy (student ID) is required" });
-  
-      // Check if the student exists
-      const studentExists = await Student.findById(createdBy);
-      if (!studentExists) return res.status(404).json({ error: "Student not found" });
-  
-      // Handle image upload to Cloudinary
-      let ImageUrl = null;
-      if (req.file) {
-        const result = await new Promise((resolve, reject) => {
-          cloudinary.uploader.upload_stream({ resource_type: 'image' }, (error, result) => {
-            if (error) {
-              console.error("Cloudinary Upload Error:", error);
-              return reject(error);
-            }
-            resolve(result);
-          }).end(req.file.buffer);
-        });
-  
-        ImageUrl = result.secure_url;
-      }
-  
-      if (!req.file && !eventImg) {
-        return res.status(400).json({ message: "Event image is required" });
-      }
-  
-      // Add event to MongoDB
-      const event = new Event({
-        title,
-        description,
-        date,
-        location,
-        createdBy,
-        eventImg: ImageUrl || eventImg, // Use Cloudinary URL if available, else use provided URL
-      });
-  
-      // Save the event
-      await event.save();
-  
-      // Respond with success
-      res.status(201).json({ message: "Event created successfully", event });
-    } catch (error) {
-      console.log("Error while Creating Event", error);
-      res.status(500).send({ message: "Internal Server Error" });
+  try {
+    // Extract data from the request body
+    const { title, description, date, location, createdBy } = req.body;
+
+    // Check if all required fields are provided
+    if (!title || !description || !date || !location) {
+      return res.status(400).json({ message: "All fields are required" });
     }
-  };
-  
+
+    // Verify if the student exists
+    const studentExists = await Student.findById(createdBy);
+    if (!studentExists) {
+      return res.status(404).json({ error: "Student not found" });
+    }
+
+    // Handle image upload to Cloudinary
+    let eventImgUrl = null;
+    if (req.file) {
+      const result = await new Promise((resolve, reject) => {
+        cloudinary.uploader.upload_stream({ resource_type: "image" }, (error, result) => {
+          if (error) {
+            return reject(error);
+          }
+          resolve(result);
+        }).end(req.file.buffer);
+      });
+
+      eventImgUrl = result.secure_url; // Store the Cloudinary image URL
+    }
+
+    // Create new event
+    const event = new Event({
+      title,
+      description,
+      eventImg: eventImgUrl, // Use the Cloudinary URL
+      date,
+      location,
+      createdBy,
+    });
+
+    // Save event to the database
+    await event.save();
+
+    // Return success response
+    res.status(201).json({ message: "Event created successfully" });
+  } catch (error) {
+    console.error("Error while creating event:", error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+};
 
 const getEvents = async (req,res)=>{
     try {
@@ -87,33 +81,75 @@ const getEvents = async (req,res)=>{
     }
 }
 
-const updateEvent = async (req,res)=>{
+// const updateEvent = async (req,res)=>{
+//     try {
+//         //get event from id
+//         const eventId = req.params.id
+
+//         //check if event exist
+//         const event = await Event.findById(eventId);
+//         if (!event) {
+//             return res.status(404).json({ error: "Event not found" });
+//             }
+
+//         //get changes from body
+//         const update = req.body
+
+//         //update event
+//         await Event.updateOne(
+//             {"_id": eventId},
+//             {$set: update}
+//         )
+
+//         //give response
+//         res.status(200).json({ message: "Event updated successfully" });
+//     } catch (error) {
+//         console.log( "Error while updating Event ",error);
+//         res.status(500).send({message:"Internal Server Error"});
+//     }
+// }
+
+const updateEvent = async (req, res) => {
     try {
-        //get event from id
-        const eventId = req.params.id
-
-        //check if event exist
-        const event = await Event.findById(eventId);
-        if (!event) {
-            return res.status(404).json({ error: "Event not found" });
+      const eventId = req.params.id;
+  
+      // Find the event by its ID
+      const event = await Event.findById(eventId);
+      if (!event) {
+        return res.status(404).json({ error: "Event not found" });
+      }
+  
+      // Update the existing fields
+      const { title, description, date, location } = req.body;
+      const update = { title, description, date, location };
+  
+      // Handle image upload if provided
+      if (req.file) {
+        const result = await new Promise((resolve, reject) => {
+          cloudinary.uploader.upload_stream({ resource_type: "image" }, (error, result) => {
+            if (error) {
+              return reject(error);
             }
-
-        //get changes from body
-        const update = req.body
-
-        //update event
-        await Event.updateOne(
-            {"_id": eventId},
-            {$set: update}
-        )
-
-        //give response
-        res.status(200).json({ message: "Event updated successfully" });
+            resolve(result);
+          }).end(req.file.buffer);
+        });
+  
+        update.eventImg = result.secure_url; // Use the new Cloudinary URL
+      }
+  
+      // Update the event in the database
+      await Event.updateOne({ _id: eventId }, { $set: update });
+  
+      // Return success response
+      res.status(200).json({ message: "Event updated successfully" });
     } catch (error) {
-        console.log( "Error while updating Event ",error);
-        res.status(500).send({message:"Internal Server Error"});
+      console.error("Error while updating event:", error);
+      res.status(500).json({ message: "Internal Server Error" });
     }
-}
+  };
+  
+  
+  
 
 const deleteEvent = async (req,res) =>{
     try {
