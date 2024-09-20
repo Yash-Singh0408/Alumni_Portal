@@ -171,5 +171,33 @@ export const verifyStudent = async (req, res) => {
   }
 };
 
+// Update Student
+export const updateStudent = async (req, res) => {
+  try {
+    // Get student ID from params
+    const studentId = req.params.id;
+    
+    // Get the update fields from the request body
+    const update = req.body;
+
+    // Find the student by ID and update it
+    const updatedStudent = await Student.findByIdAndUpdate(
+      studentId,
+      { $set: update },
+      { new: true } // Return the updated document
+    );
+
+    // Check if student was found and updated
+    if (!updatedStudent) {
+      return res.status(404).json({ message: "Student not found" });
+    }
+
+    // Send a successful response with the updated student
+    res.status(200).json({ message: "Student updated successfully", student: updatedStudent });
+  } catch (error) {
+    console.error("Error while updating Student:", error);
+    res.status(500).send({ message: "Internal Server Error" });
+  }
+};
 
   
