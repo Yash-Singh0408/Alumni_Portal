@@ -9,8 +9,8 @@ const navigate =useNavigate();
   return (
     <>
     <div className="min-h-screen bg-gradient-to-br from-blue-100 via-white to-green-100 p-4">
-      <header className="flex justify-between items-center mb-8">
-        <div className=" max-w-24 "><img className='w-full' src="./logo.png" alt="" /></div>
+      <header className="flex justify-between items-center mb-8 px-8">
+        <div className=" text-2xl font-bold">ALUMNI</div>
         <div className="flex gap-2 items-center">
           <button onClick={()=> navigate('/login')} className="text-sm font-medium text-gray-600 hover:text-gray-800">Login</button>
           <button onClick={()=> navigate('/signup')} className="text-sm font-medium bg-purple-100 text-purple-800 px-3 py-1 rounded-full hover:bg-purple-200">Sign up</button>
