@@ -150,7 +150,7 @@ const updateEvent = async (req, res) => {
   
   
   
-
+//delete event
 const deleteEvent = async (req,res) =>{
     try {
         //get event id

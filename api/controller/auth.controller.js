@@ -1,9 +1,12 @@
 import bcrypt from "bcrypt"; 
 import Student from "../model/student.model.js";
+import otpverification from "../model/otpverification.model.js"
 import { v2 as cloudinary } from "cloudinary";
 import multer from "multer"; // For handling multipart form data
 import nodemailer from "nodemailer"
 import jwt from "jsonwebtoken"
+import crypto from 'crypto';
+import { Resend } from 'resend';
 
 // Cloudinary config
 
@@ -12,20 +15,92 @@ const storage = multer.memoryStorage(); // Store file in memory buffer
 export const upload = multer({ storage });
 
 // Signup controller
+// export const signup = async (req, res) => {
+//   const { name, email, password, phone, skills, workingAt, yearOfPassing, course, batch } = req.body;
+
+//   console.log("request",req.body); 
+//   console.log("cloud details",process.env.CLOUD_NAME)
+//   console.log("cloud details",process.env.CLOUDINARY_API_KEY)
+//   console.log("cloud details",process.env.CLOUDINARY_API_SECRET)
+
+//   cloudinary.config({
+//     cloud_name: process.env.CLOUD_NAME,
+//     api_key: process.env.CLOUDINARY_API_KEY,
+//     api_secret: process.env.CLOUDINARY_API_SECRET,
+//   });
+  
+
+//   try {
+//     // Check if the email is already in use
+//     const existingStudent = await Student.findOne({ email });
+//     if (existingStudent) {
+//       return res.status(400).json({ success: false, message: "Email already in use" });
+//     }
+
+//     // Hash the password
+//     const hashedPassword = await bcrypt.hash(password, 10);
+
+//     // Handle image upload to Cloudinary
+//     let profileImageUrl = null;
+//     if (req.file) {
+//       const result = await new Promise((resolve, reject) => {
+//         cloudinary.uploader.upload_stream({ resource_type: 'image' }, (error, result) => {
+//           if (error) {
+//             return reject(error);
+//           }
+//           resolve(result);
+//         }).end(req.file.buffer);
+//       });
+
+//       profileImageUrl = result.secure_url;
+//     }
+
+//     console.log("profile image url",profileImageUrl)
+
+   
+    
+//     // Create new student
+//     const newStudent = new Student({
+//       name,
+//       email,
+//       password: hashedPassword,
+//       phone,
+//       skills,
+//       workingAt,
+//       yearOfPassing,
+//       course,
+//       batch,
+//       profileImage: profileImageUrl, // store image URL
+//     });
+
+//     // Save the student to the database
+//     await newStudent.save();
+
+//     res.status(201).json({ success: true, message: "Student registered successfully" });
+//   } catch (error) {
+//     console.error("Error during signup:", error);
+//     res.status(500).json({ success: false, message: "Server error" });
+//   }
+// };
+
+// Initialize Resend with your API key
+const resend = new Resend("re_iWjDbkrs_k9jVxDZXZ38fYnhb2qZqU4UE");
+console.log("resend: ",resend);
+
+
 export const signup = async (req, res) => {
   const { name, email, password, phone, skills, workingAt, yearOfPassing, course, batch } = req.body;
 
-  console.log("request",req.body); 
-  console.log("cloud details",process.env.CLOUD_NAME)
-  console.log("cloud details",process.env.CLOUDINARY_API_KEY)
-  console.log("cloud details",process.env.CLOUDINARY_API_SECRET)
+  console.log("request", req.body);
+  console.log("cloud details", process.env.CLOUD_NAME);
+  console.log("cloud details", process.env.CLOUDINARY_API_KEY);
+  console.log("cloud details", process.env.CLOUDINARY_API_SECRET);
 
   cloudinary.config({
     cloud_name: process.env.CLOUD_NAME,
     api_key: process.env.CLOUDINARY_API_KEY,
     api_secret: process.env.CLOUDINARY_API_SECRET,
   });
-  
 
   try {
     // Check if the email is already in use
@@ -52,32 +127,29 @@ export const signup = async (req, res) => {
       profileImageUrl = result.secure_url;
     }
 
-    console.log("profile image url",profileImageUrl)
+    console.log("profile image url", profileImageUrl);
 
-    // const transporter = nodemailer.createTransport({
-    //   host: "smtp.ethereal.email",
-    //   port: 587,
-    //   secure: false, // true for port 465, false for other ports
-    //   auth: {
-    //     user: "maddison53@ethereal.email",
-    //     pass: "jn7jnAPss4f63QBp6D",
-    //   },
-    // });
+    // Generate verification token
+    const verificationToken = crypto.randomBytes(20).toString('hex');
 
-    // const info = await transporter.sendMail({
-    //   from: '"Alumni Associate Portal" <alumni@ethereal.email>', // sender address
-    //   to: email, // list of receivers
-    //   subject: 'Verify Your Email',
-    //     html: \Please click the following link to verify your email: <a href="\${verificationUrl}">\${verificationUrl}</a>\
+    // Verification URL (replace with your frontend URL)
+    const verificationUrl = `http://localhost:3000/verify-email/${verificationToken}`;
 
-    // });
-  
-    // console.log("Message sent: %s", info.messageId);
+    // Send verification email using Resend
+    const { data, error } = await resend.emails.send({
+      from: 'Alumni Associate Portal <onboarding@resend.dev>',
+      to: email,
+      subject: 'Verify Your Email',
+      html: `Please click the following link to verify your email: <a href="${verificationUrl}">${verificationUrl}</a>`
+    });
 
-    // if(!isEmailVerified){
-    //   return res.status(400).json({ success: false, message: "Email not verified"})
-    // }
-    
+    if (error) {
+      console.error("Error sending email:", error);
+      return res.status(500).json({ success: false, message: "Error sending verification email" });
+    }
+
+    console.log("Email sent successfully:", data);
+
     // Create new student
     const newStudent = new Student({
       name,
@@ -89,19 +161,96 @@ export const signup = async (req, res) => {
       yearOfPassing,
       course,
       batch,
-      profileImage: profileImageUrl, // store image URL
+      profileImage: profileImageUrl,
+      verificationToken,
+      isEmailVerified: false,
     });
 
     // Save the student to the database
-    await newStudent.save();
+    const savedStudent = await newStudent.save();
 
-    res.status(201).json({ success: true, message: "Student registered successfully" });
+    // Send OTP verification email
+    await sendOTPVerificationEmail(savedStudent, res);
+
+    res.status(201).json({ 
+      success: true, 
+      message: "Student registered successfully. Please check your email to verify your account." 
+    });
   } catch (error) {
     console.error("Error during signup:", error);
     res.status(500).json({ success: false, message: "Server error" });
   }
 };
 
+// Function to send OTP verification email
+const sendOTPVerificationEmail = async (student, res) => {
+  try {
+    const otp = `${Math.floor(1000 + Math.random() * 9000)}`;
+
+    // Send OTP email using Resend
+    const { data, error } = await resend.emails.send({
+      from: 'Alumni Associate Portal <onboarding@resend.dev>',
+      to: student.email,
+      subject: 'OTP Verification',
+      html: `Your OTP is: <b>${otp}</b>`
+    });
+
+    if (error) {
+      console.error("Error sending OTP email:", error);
+      return res.status(500).json({ status: "FAILED", message: "Error sending OTP email" });
+    }
+
+    console.log("OTP email sent successfully:", data);
+
+    // Hash OTP
+    const hashedOTP = await bcrypt.hash(otp, 10);
+
+    const newOtpVerification = new otpverification({
+      userId: student._id,
+      otp: hashedOTP,
+      createdAt: Date.now(),
+      expiresAt: Date.now() + 3600000
+    });
+
+    await newOtpVerification.save();
+
+    res.json({
+      status: "PENDING",
+      message: "OTP sent to your email",
+      data: {
+        userId: student._id,
+        email: student.email,
+      }
+    });
+  } catch (error) {
+    console.log("Error while email verification ", error);
+    res.status(500).json({
+      status: "FAILED",
+      message: error.message
+    });
+  }
+};
+
+// Add this new controller for email verification
+export const verifyEmail = async (req, res) => {
+  try {
+    const { token } = req.params;
+    const student = await Student.findOne({ verificationToken: token });
+
+    if (!student) {
+      return res.status(400).json({ success: false, message: "Invalid or expired verification token" });
+    }
+
+    student.isEmailVerified = true;
+    student.verificationToken = undefined;
+    await student.save();
+
+    res.status(200).json({ success: true, message: "Email verified successfully" });
+  } catch (error) {
+    console.error("Error during email verification:", error);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+};
 
 
 // Signin

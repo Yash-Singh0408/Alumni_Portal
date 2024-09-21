@@ -4,6 +4,6 @@ import { createEvent, getEvents, updateEvent, deleteEvent, upload } from '../con
 const router = express.Router();
 router.post('/create-event', upload.single("eventImg"),createEvent);
 router.get('/events',getEvents);
-router.put('/update-event/:id', upload.single("eventImg"),updateEvent);
-router.post('/update-event/:id',deleteEvent);
+router.put('/event/:id', upload.single("eventImg"),updateEvent);
+router.post('/event/:id',deleteEvent);
 export default router;

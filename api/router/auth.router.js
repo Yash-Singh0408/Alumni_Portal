@@ -13,4 +13,5 @@ router.post('/verify/:id',verifyStudent)
 router.put('/student/:id',updateStudent)
 router.post('/student/:id',deleteStudent)
 
+
 export default router;
