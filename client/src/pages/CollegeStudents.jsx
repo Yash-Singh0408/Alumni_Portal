@@ -25,7 +25,7 @@ export default function CollegeStudents() {
 
   const fetchStudents = async () => {
     try {
-      const response = await fetch('http://localhost:3000/api/auth/getusers');
+      const response = await fetch('http://localhost:10000/api/auth/getusers');
       const data = await response.json();
   
       // Filter only students who are not alumni

@@ -2,7 +2,7 @@ import { useState } from 'react';
 import axios from 'axios';
 import { Link, useNavigate } from 'react-router-dom';
 
-const baseURL = "http://localhost:3000";
+const baseURL = "http://localhost:10000";
 
 export default function Signup() {
   const navigate = useNavigate();

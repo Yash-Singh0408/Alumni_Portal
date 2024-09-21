@@ -20,7 +20,7 @@ export default function Events() {
   const fetchEvents = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch('http://localhost:3000/api/event/events', {
+      const response = await fetch('http://localhost:10000/api/event/events', {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${token}`,

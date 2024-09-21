@@ -227,7 +227,7 @@ export const signup = async (req, res) => {
     const verificationToken = crypto.randomBytes(20).toString('hex');
 
     // Verification URL (replace with your frontend URL)
-    const verificationUrl = `http://localhost:3000/verify-email/${verificationToken}`;
+    const verificationUrl = `http://localhost:10000/verify-email/${verificationToken}`;
 
     // Send verification email using Resend
     const { data, error } = await resend.emails.send({
