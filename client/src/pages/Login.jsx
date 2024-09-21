@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import Cookies from 'js-cookie';
 import { FaLock, FaEnvelope, FaEye, FaEyeSlash } from 'react-icons/fa';
 
-const baseURL = "http://localhost:10000";
+const baseURL = "http://localhost:3000";
 
 export default function Login(){
   const [formData, setFormData] = useState({

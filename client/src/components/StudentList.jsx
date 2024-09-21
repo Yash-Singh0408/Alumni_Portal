@@ -27,7 +27,7 @@ export default function StudentList() {
 
   const fetchStudents = async () => {
     try {
-      const response = await fetch('http://localhost:10000/api/auth/getusers');
+      const response = await fetch('http://localhost:3000/api/auth/getusers');
       const data = await response.json();
   
       // Filter out students based on the isAlumni field being false
@@ -67,7 +67,7 @@ export default function StudentList() {
 
   const toggleVerification = async (studentId, isAdminVerified) => {
     try {
-      const response = await fetch(`http://localhost:10000/api/auth/verify/${studentId}`, {
+      const response = await fetch(`http://localhost:3000/api/auth/verify/${studentId}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -102,7 +102,7 @@ export default function StudentList() {
   const handleUpdate = async (e) => {
     e.preventDefault()
     try {
-      const response = await fetch(`http://localhost:10000/api/auth/student/${editingStudent._id}`, {
+      const response = await fetch(`http://localhost:3000/api/auth/student/${editingStudent._id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -129,7 +129,7 @@ export default function StudentList() {
   const handleDelete = async (studentId) => {
     if (window.confirm('Are you sure you want to delete this student?')) {
       try {
-        const response = await fetch(`http://localhost:10000/api/auth/student/${studentId}`, {
+        const response = await fetch(`http://localhost:3000/api/auth/student/${studentId}`, {
           method: 'DELETE',
         })
 

@@ -36,7 +36,7 @@ const AddEvent = ({ onClose, onSubmit, event }) => {
     }
 
     try {
-      const response = await axios.post('http://localhost:10000/api/event/create-event', formDataToSend, {
+      const response = await axios.post('http://localhost:3000/api/event/create-event', formDataToSend, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },

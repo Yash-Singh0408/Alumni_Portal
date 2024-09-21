@@ -3,7 +3,7 @@ import { Search, Menu, User, ChevronLeft, ChevronRight, Check, X, Filter } from 
 import Footer from './Footer'
 import Navbar from './Navbar'
 
-const baseURL = "http://localhost:10000";
+const baseURL = "http://localhost:3000";
 
 const avatarColors = {
   yellow: 'bg-yellow-500',
@@ -28,7 +28,7 @@ export default function List() {
   }, [students])
 
   const fetchStudents = () => {
-    fetch('http://localhost:10000/api/auth/getusers')
+    fetch('http://localhost:3000/api/auth/getusers')
       .then((response) => response.json())
       .then((data) => {
         setStudents(data)
@@ -64,7 +64,7 @@ export default function List() {
 
   const toggleVerification = async (studentId, isAdminVerified) => {
     try {
-      const response = await fetch(`http://localhost:10000/api/auth/verify/${studentId}`, {
+      const response = await fetch(`http://localhost:3000/api/auth/verify/${studentId}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -99,7 +99,7 @@ export default function List() {
   const handleUpdate = async (e) => {
     e.preventDefault()
     try {
-      const response = await fetch(`http://localhost:10000/api/auth/student/${editingStudent._id}`, {
+      const response = await fetch(`http://localhost:3000/api/auth/student/${editingStudent._id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -126,7 +126,7 @@ export default function List() {
   const handleDelete = async (studentId) => {
     if (window.confirm('Are you sure you want to delete this user?')) {
       try {
-        const response = await fetch(`http://localhost:10000/api/auth/student/${studentId}`, {
+        const response = await fetch(`http://localhost:3000/api/auth/student/${studentId}`, {
           method: 'POST',
         })
 

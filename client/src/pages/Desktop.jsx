@@ -23,7 +23,7 @@ const Desktop = () => {
 
   const fetchAlumni = async () => {
     try {
-      const response = await axios.get('http://localhost:10000/api/auth/getusers');
+      const response = await axios.get('http://localhost:3000/api/auth/getusers');
       const alumniList = response.data.filter(user => user.isAlumni).slice(0, 6);
       setAlumni(alumniList);
     } catch (error) {
@@ -33,7 +33,7 @@ const Desktop = () => {
 
   const fetchEvents = async () => {
     try {
-      const response = await axios.get('http://localhost:10000/api/event/events');
+      const response = await axios.get('http://localhost:3000/api/event/events');
       setEvents(response.data.slice(0, 4));
     } catch (error) {
       console.error("Error fetching events:", error);
