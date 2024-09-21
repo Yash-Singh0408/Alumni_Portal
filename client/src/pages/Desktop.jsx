@@ -112,6 +112,13 @@ const QuickAccessButton = ({ icon, title, description }) => (
   </div>
 );
 
+QuickAccessButton.propTypes = {
+  icon: PropTypes.node.isRequired,
+  title: PropTypes.string.isRequired,
+  description: PropTypes.string.isRequired,
+};
+
+// Prop types for EventCard
 const EventCard = ({ image, title, description, date, location }) => {
   const fallbackImage = '/Transparency.png';
 
@@ -149,5 +156,10 @@ const AlumniConnectionItem = ({ name, batch }) => (
     </button>
   </div>
 );
+
+AlumniConnectionItem.propTypes = {
+  name: PropTypes.string.isRequired,
+  batch: PropTypes.string.isRequired,
+};
 
 export default Desktop;
