@@ -10,6 +10,7 @@ import Desktop from "./pages/Desktop";
 import Students from "./pages/Students"
 import Alumini from "./pages/Alumini";
 import CollegeStudents from "./pages/CollegeStudents";
+import Events from "./pages/Events";
 const App = () => {
   return (
     <Router>
@@ -22,6 +23,7 @@ const App = () => {
         <Route path="/alumini" element={<Alumini/>}/>
         <Route path="/profile" element={<Profile/>}/>
         <Route path="/dashboard" element={<Desktop/>}/>
+        <Route path="/events" element={<Events/>}/>
       </Routes>
     </Router>
   );

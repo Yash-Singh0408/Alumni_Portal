@@ -32,14 +32,20 @@ export default function Login(){
         withCredentials: true,
       });
       console.log(response.data);
+      const data=response.data;
+      if (data.success) {
+        console.log('Token:', data.token); // JWT token, accessible in frontend
+        localStorage.setItem('token', data.token); // Optionally, store token in localStorage
+        setSuccess(true);
+        setError(null);
+        navigate('/dashboard');
+      } else {
+        setSuccess(false);
+        setError(data.message);
+        console.error('Signin failed:', data.message);
+      }
 
-      const token = response.data.token;
-      Cookies.set('accessToken', token, { secure: true, sameSite: 'Strict' });
 
-      setSuccess(true);
-      setError(null);
-
-      navigate('/dashboard');
 
     } catch (error) {
       if (error.response) {

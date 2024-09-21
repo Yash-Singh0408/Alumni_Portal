@@ -419,6 +419,7 @@ export const verifyEmail = async (req, res) => {
 
 
 // Signin
+
 export const signin = async (req, res) => {
   const { email, password } = req.body;
 
@@ -427,8 +428,9 @@ export const signin = async (req, res) => {
     if (!validStudent) {
       return res
         .status(400)
-        .json({ success: false, message: "Student dont exist" });
+        .json({ success: false, message: "Student doesn't exist" });
     }
+
     // Compare the provided password with the hashed password in the DB
     const isMatch = await bcrypt.compare(password, validStudent.password);
     if (!isMatch) {
@@ -436,28 +438,33 @@ export const signin = async (req, res) => {
         .status(400)
         .json({ success: false, message: "Invalid credentials" });
     }
-     // Generate JWT token
-      const token = jwt.sign({ _id: validStudent._id }, process.env.JWT_SECRET, {
-       expiresIn: '1d' // Token expires in 1 day
-      });
 
-  // Destructure validStudent and remove the password field
-  const { password: pass, ...rest } = validStudent._doc;
+    // Generate JWT token, including username in the payload
+    const token = jwt.sign({ 
+      _id: validStudent._id, 
+      username: validStudent.username // Add username to the token
+    }, process.env.JWT_SECRET, {
+      expiresIn: '1d', // Token expires in 1 day
+    });
 
-  // Set the cookie with the JWT token
-  res.cookie("access_token", token, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === 'production', // Secure flag for HTTPS in production
-    expires: new Date(Date.now() + 24 * 60 * 60 * 1000), // Cookie expires in 1 day
-  })
-  .status(200)
-  .json({ success: true, student: rest });
+    // Destructure validStudent and remove the password field
+    const { password: pass, ...rest } = validStudent._doc;
 
-} catch (error) {
-  console.error("Signin error:", error);
-  res.status(500).json({ success: false, message: "Server error" });
-}
-}
+    // Set the cookie with the JWT token
+    res.cookie("access_token", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production', // Secure flag for HTTPS in production
+      expires: new Date(Date.now() + 24 * 60 * 60 * 1000), // Cookie expires in 1 day
+    })
+    .status(200)
+    .json({ success: true, student: rest, token }); // Sending token in response as well
+
+  } catch (error) {
+    console.error("Signin error:", error);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+};
+
 
 //Signout
 export const signout = async (req, res) => {
