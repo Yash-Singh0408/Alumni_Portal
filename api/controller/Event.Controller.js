@@ -27,11 +27,7 @@ const createEvent = async (req, res) => {
       return res.status(400).json({ message: "All fields are required" });
     }
 
-    // Verify if the student exists
-    const studentExists = await Student.findById(createdBy);
-    if (!studentExists) {
-      return res.status(404).json({ error: "Student not found" });
-    }
+    
 
     // Handle image upload to Cloudinary
     let eventImgUrl = null;
