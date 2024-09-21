@@ -290,7 +290,72 @@ const sendOTPVerificationEmail = async (student, res) => {
       from: 'Alumni Associate Portal <onboarding@resend.dev>',
       to: student.email,
       subject: 'OTP Verification',
-      html: `Your OTP is: <b>${otp}</b>`
+      html: `
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>OTP Verification</title>
+            <style>
+                body {
+                    font-family: Arial, sans-serif;
+                    line-height: 1.6;
+                    color: #333;
+                    max-width: 600px;
+                    margin: 0 auto;
+                    padding: 20px;
+                }
+                .container {
+                    background-color: #f9f9f9;
+                    border-radius: 5px;
+                    padding: 30px;
+                    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+                }
+                h1 {
+                    color: #2c3e50;
+                    text-align: center;
+                    margin-bottom: 20px;
+                }
+                .otp-container {
+                    background-color: #3498db;
+                    color: #ffffff;
+                    font-size: 24px;
+                    font-weight: bold;
+                    text-align: center;
+                    padding: 15px;
+                    margin: 20px 0;
+                    border-radius: 5px;
+                }
+                p {
+                    margin-bottom: 15px;
+                }
+                .footer {
+                    text-align: center;
+                    margin-top: 20px;
+                    font-size: 12px;
+                    color: #7f8c8d;
+                }
+            </style>
+        </head>
+        <body>
+            <div class="container">
+                <h1>OTP Verification</h1>
+                <p>Dear User,</p>
+                <p>Thank you for registering with the Alumni Associate Portal. To complete your verification process, please use the following One-Time Password (OTP):</p>
+                <div class="otp-container">
+                    ${otp}
+                </div>
+                <p>This OTP is valid for 60 minutes. Please do not share this code with anyone.</p>
+                <p>If you didn't request this verification, please ignore this email or contact our support team.</p>
+                <p>Best regards,<br>Alumni Associate Portal Team</p>
+            </div>
+            <div class="footer">
+                <p>This is an automated message, please do not reply to this email.</p>
+            </div>
+        </body>
+        </html>
+      `
     });
 
     if (error) {
