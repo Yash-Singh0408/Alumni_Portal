@@ -1,134 +1,106 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { FaGraduationCap, FaBriefcase, FaCalendarAlt } from 'react-icons/fa';
+import { FaGraduationCap, FaBriefcase, FaCalendarAlt, FaUsers, FaUserGraduate, FaSchool, FaBars } from 'react-icons/fa';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
+import EventList from '../components/EventList';
+import StudentList from '../components/StudentList';
+import AluminiList from '../components/AluminiList';
+import List from '../components/List';
 
 const Desktop = () => {
+  const [activeComponent, setActiveComponent] = useState('events');
   const [alumni, setAlumni] = useState([]);
   const [events, setEvents] = useState([]);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   useEffect(() => {
-    // Fetch users data from API
-    axios.get('http://localhost:3000/api/auth/getusers')
-      .then((response) => {
-        console.log("users", response.data)
-        // Filter only alumni
-        const alumniList = response.data.filter(user => user.isAlumni);
-        // Set the top 6 alumni
-        setAlumni(alumniList.slice(0, 6));
-      })
-      .catch((error) => {
-        console.error("Error fetching alumni data:", error);
-      });
-
-    // Fetch top 4 events
-    axios.get('http://localhost:3000/api/event/events')
-      .then(response => {
-        console.log("events", response.data)
-        const eventData = response.data.slice(0, 4);
-        setEvents(eventData);
-      })
-      .catch(error => {
-        console.error("Error fetching events:", error);
-      });
+    fetchAlumni();
+    fetchEvents();
   }, []);
 
+  const fetchAlumni = async () => {
+    try {
+      const response = await axios.get('http://localhost:3000/api/auth/getusers');
+      const alumniList = response.data.filter(user => user.isAlumni).slice(0, 6);
+      setAlumni(alumniList);
+    } catch (error) {
+      console.error("Error fetching alumni data:", error);
+    }
+  };
+
+  const fetchEvents = async () => {
+    try {
+      const response = await axios.get('http://localhost:3000/api/event/events');
+      setEvents(response.data.slice(0, 4));
+    } catch (error) {
+      console.error("Error fetching events:", error);
+    }
+  };
+
+  const renderComponent = () => {
+    switch (activeComponent) {
+      case 'events':
+        return <EventList events={events} />;
+      case 'students':
+        return <List />;
+      case 'alumni':
+        return <AluminiList />;
+      case 'collegeStudents':
+        return <StudentList collegeOnly={true} />;
+      default:
+        return <EventList events={events} />;
+    }
+  };
+
   return (
-    <>
+    <div className="flex flex-col min-h-screen bg-blue-50">
       <Navbar />
-      <div className="bg-blue-50 min-h-screen p-4 sm:p-8">
-        <div className="max-w-7xl mx-auto">
-          {/* Header */}
-          <header className="bg-white rounded-lg shadow-sm p-6 mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center">
-            <div>
-              <h1 className="text-3xl font-bold text-gray-800">Good Morning, Username!</h1>
-              <p className="text-gray-600">Welcome back to the Alumni Network! Here's what's happening today.</p>
+      <div className="flex-grow">
+        {/* Horizontal Sidebar */}
+        <div className="bg-white shadow-md">
+          <div className="container mx-auto px-4">
+            <div className="flex items-center justify-between py-4">
+              <h2 className="text-2xl font-bold">Admin Dashboard</h2>
+              <button 
+                className="md:hidden text-gray-600 hover:text-gray-900"
+                onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+              >
+                <FaBars size={24} />
+              </button>
             </div>
-            <div className="mt-4 sm:mt-0 flex items-center">
-              <img
-                src="/placeholder.svg"
-                alt="User Avatar"
-                width={50}
-                height={50}
-                className="rounded-full"
-              />
-              <div className="ml-3">
-                <p className="font-semibold">Welcome back</p>
-                <p className="text-lg font-bold">User Name here</p>
-                <button className="mt-2 bg-blue-600 text-white px-4 py-2 rounded-full text-sm">View Profile</button>
-              </div>
-            </div>
-          </header>
-
-          {/* Quick Access Buttons */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
-            <QuickAccessButton
-              icon={<FaGraduationCap />}
-              title="Connect with Alumni"
-              description="Search the directory to reconnect with old friends and make new connections."
-            />
-            <QuickAccessButton
-              icon={<FaBriefcase />}
-              title="Career Opportunities"
-              description="Access a job board with exclusive listings from top companies for alumni."
-            />
-            <QuickAccessButton
-              icon={<FaCalendarAlt />}
-              title="Attend Events"
-              description="Stay updated on upcoming events, webinars, and networking opportunities."
-            />
+            <ul className={`flex flex-col md:flex-row md:space-x-4 ${isSidebarOpen ? 'block' : 'hidden md:flex'}`}>
+              <SidebarItem icon={<FaCalendarAlt />} text="Events" onClick={() => setActiveComponent('events')} active={activeComponent === 'events'} />
+              <SidebarItem icon={<FaUsers />} text="Students" onClick={() => setActiveComponent('students')} active={activeComponent === 'students'} />
+              <SidebarItem icon={<FaUserGraduate />} text="Alumni" onClick={() => setActiveComponent('alumni')} active={activeComponent === 'alumni'} />
+              <SidebarItem icon={<FaSchool />} text="College Students" onClick={() => setActiveComponent('collegeStudents')} active={activeComponent === 'collegeStudents'} />
+            </ul>
           </div>
+        </div>
 
-          {/* Main Content */}
-          <div className="flex flex-col lg:flex-row gap-6">
-            {/* Upcoming Events */}
-            <div className="lg:w-2/3">
-              <h2 className="text-2xl font-bold mb-4">Upcoming Events</h2>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {events.length > 0 ? (
-                  events.map((event, index) => (
-                    <EventCard
-                      key={index}
-                      image={event.eventImg ? event.eventImg : "/images/Transparency.png"}  // Use 'image' prop instead of 'name'
-                      title={event.title}
-                      description={event.description}
-                      date={event.date}                              // Add the date field
-                      location={event.location}                      // Add the location field
-                    />
-                  ))
-                ) : (
-                  <p>No events yet</p>
-                )}
-
-              </div>
-            </div>
-
-            {/* Alumni Connections */}
-            <div className="lg:w-1/3">
-              <h2 className="text-2xl font-bold mb-4">Alumni Connections</h2>
-              <div className="bg-white rounded-lg shadow-sm p-4">
-                {alumni.length > 0 ? (
-                  alumni.map((alumnus, index) => (
-                    <AlumniConnectionItem
-                      key={index}
-                      name={alumnus.name}
-                      batch={alumnus.batch}
-                    />
-                  ))
-                ) : (
-                  <p>No alumni found</p>
-                )}
-                <button className="w-full mt-4 bg-teal-500 text-white px-4 py-2 rounded-full text-sm">View More</button>
-              </div>
-            </div>
+        {/* Main Content */}
+        <div className="container mx-auto px-4 py-8">
+          <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
+            <h1 className="text-3xl font-bold text-gray-800 mb-2">Welcome, Username!</h1>
+            <p className="text-gray-600">Here's what's happening in your Alumni Network.</p>
           </div>
+          {renderComponent()}
         </div>
       </div>
       <Footer />
-    </>
+    </div>
   );
 };
+
+const SidebarItem = ({ icon, text, onClick, active }) => (
+  <li 
+    className={`flex items-center p-2 rounded-lg cursor-pointer ${active ? 'bg-blue-100 text-blue-600' : 'hover:bg-gray-100'}`}
+    onClick={onClick}
+  >
+    <span className="mr-2">{icon}</span>
+    <span>{text}</span>
+  </li>
+);
 
 const QuickAccessButton = ({ icon, title, description }) => (
   <div className="bg-white rounded-lg shadow-sm p-6 flex items-start">
@@ -141,13 +113,12 @@ const QuickAccessButton = ({ icon, title, description }) => (
 );
 
 const EventCard = ({ image, title, description, date, location }) => {
-  // Fallback image
   const fallbackImage = '/Transparency.png';
 
   return (
     <div className="bg-white rounded-lg shadow-sm overflow-hidden">
       <img
-        src={image || fallbackImage} // Use fallback if image is falsy
+        src={image || fallbackImage}
         alt={title}
         width={300}
         height={200}
@@ -161,8 +132,6 @@ const EventCard = ({ image, title, description, date, location }) => {
     </div>
   );
 };
-
-
 
 const AlumniConnectionItem = ({ name, batch }) => (
   <div className="flex items-center justify-between py-2 border-b last:border-b-0">

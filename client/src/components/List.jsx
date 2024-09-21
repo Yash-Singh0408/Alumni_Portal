@@ -71,15 +71,15 @@ export default function List() {
         },
         body: JSON.stringify({ isAdminVerified }),
       });
-  
+
       if (!response.ok) {
         throw new Error('Failed to update verification status');
       }
-  
+
       const data = await response.json();
       console.log('Verification updated:', data);
-  
-      setStudents(prevStudents => 
+
+      setStudents(prevStudents =>
         prevStudents.map(student =>
           student._id === studentId
             ? { ...student, isAdminVerified: !student.isAdminVerified }
@@ -143,45 +143,64 @@ export default function List() {
 
   return (
     <>
-      <Navbar />
       <div className="container mx-auto p-4">
         <div className="flex flex-col sm:flex-row justify-between items-center mb-6">
           <h1 className="text-2xl font-bold mb-4 sm:mb-0">Students</h1>
-          <div className="flex flex-wrap items-center gap-2">
-            <div className="relative">
+
+          <div className="flex flex-col md:flex-row md:space-x-4 space-y-4 md:space-y-0 items-center w-full max-w-6xl mx-auto px-4 py-4">
+            {/* Search Input */}
+            <div className="relative w-full md:w-1/3">
               <input
                 type="text"
                 placeholder="Search by name"
-                className="w-full sm:w-auto pl-8 pr-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-purple-600"
+                className="w-full pl-10 pr-4 py-2 text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
-              <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
             </div>
-            <select
-              value={courseFilter}
-              onChange={(e) => setCourseFilter(e.target.value)}
-              className="border rounded-md px-2 py-2 focus:outline-none focus:ring-2 focus:ring-purple-600"
-            >
-              <option value="">All Courses</option>
-              {courses.map(course => (
-                <option key={course} value={course}>{course}</option>
-              ))}
-            </select>
-            <select
-              value={batchFilter}
-              onChange={(e) => setBatchFilter(e.target.value)}
-              className="border rounded-md px-2 py-2 focus:outline-none focus:ring-2 focus:ring-purple-600"
-            >
-              <option value="">All Batches</option>
-              {batches.map(batch => (
-                <option key={batch} value={batch}>{batch}</option>
-              ))}
-            </select>
-            <button className="p-2 bg-purple-600 text-white rounded-full">
-              <Filter size={24} />
-            </button>
+
+            {/* Course Filter */}
+            <div className="w-full md:w-1/4">
+              <select
+                value={courseFilter}
+                onChange={(e) => setCourseFilter(e.target.value)}
+                className="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-600"
+              >
+                <option value="">All Courses</option>
+                {courses.map(course => (
+                  <option key={course} value={course}>{course}</option>
+                ))}
+              </select>
+            </div>
+
+            {/* Batch Filter */}
+            <div className="w-full md:w-1/4">
+              <select
+                value={batchFilter}
+                onChange={(e) => setBatchFilter(e.target.value)}
+                className="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-600"
+              >
+                <option value="">All Batches</option>
+                {batches.map(batch => (
+                  <option key={batch} value={batch}>{batch}</option>
+                ))}
+              </select>
+            </div>
+
+            {/* Filter Button */}
+            <div className="flex justify-center md:justify-end w-full md:w-auto">
+              <button className="p-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition duration-150 ease-in-out">
+                <Filter size={24} />
+              </button>
+            </div>
           </div>
+
+
+
+
+
+
         </div>
         <div className="overflow-x-auto">
           <table className="min-w-full bg-white shadow-md rounded-lg">
@@ -203,7 +222,7 @@ export default function List() {
                     <td className="px-4 py-2">{student._id}</td>
                     <td className="px-4 py-2 flex items-center">
                       <div className="flex items-center">
-                        <div className={`w-8 h-8 rounded-full ${Object.values(avatarColors)[index % 3]} flex items-center justify-center mr-2`}>
+                        <div className={`w-8 h-8 rounded-full ${Object.values(avatarColors)[index % 3]} flex items-center justify-center mr-2 flex-shrink-0`}>
                           <User className="text-white" size={16} />
                         </div>
                         {student.name}
@@ -275,7 +294,7 @@ export default function List() {
                 <input
                   type="text"
                   value={editingStudent.name}
-                  onChange={(e) => setEditingStudent({...editingStudent, name: e.target.value})}
+                  onChange={(e) => setEditingStudent({ ...editingStudent, name: e.target.value })}
                   className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                 />
               </div>
@@ -284,7 +303,7 @@ export default function List() {
                 <input
                   type="email"
                   value={editingStudent.email}
-                  onChange={(e) => setEditingStudent({...editingStudent, email: e.target.value})}
+                  onChange={(e) => setEditingStudent({ ...editingStudent, email: e.target.value })}
                   className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                 />
               </div>
@@ -293,7 +312,7 @@ export default function List() {
                 <input
                   type="text"
                   value={editingStudent.course}
-                  onChange={(e) => setEditingStudent({...editingStudent, course: e.target.value})}
+                  onChange={(e) => setEditingStudent({ ...editingStudent, course: e.target.value })}
                   className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                 />
               </div>
@@ -302,7 +321,7 @@ export default function List() {
                 <input
                   type="text"
                   value={editingStudent.batch}
-                  onChange={(e) => setEditingStudent({...editingStudent, batch: e.target.value})}
+                  onChange={(e) => setEditingStudent({ ...editingStudent, batch: e.target.value })}
                   className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                 />
               </div>
@@ -325,8 +344,6 @@ export default function List() {
           </div>
         </div>
       )}
-
-      <Footer />
     </>
   )
 }

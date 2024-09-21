@@ -12,20 +12,98 @@ const storage = multer.memoryStorage(); // Store file in memory buffer
 export const upload = multer({ storage });
 
 // Signup controller
-export const signup = async (req, res) => {
-  const { name, email, password, phone, skills, workingAt, yearOfPassing, course, batch } = req.body;
+// export const signup = async (req, res) => {
+//   const { name, email, password, phone, skills, workingAt, yearOfPassing, course, batch } = req.body;
 
-  console.log("request",req.body); 
-  console.log("cloud details",process.env.CLOUD_NAME)
-  console.log("cloud details",process.env.CLOUDINARY_API_KEY)
-  console.log("cloud details",process.env.CLOUDINARY_API_SECRET)
+//   console.log("request",req.body); 
+//   console.log("cloud details",process.env.CLOUD_NAME)
+//   console.log("cloud details",process.env.CLOUDINARY_API_KEY)
+//   console.log("cloud details",process.env.CLOUDINARY_API_SECRET)
 
-  cloudinary.config({
-    cloud_name: process.env.CLOUD_NAME,
-    api_key: process.env.CLOUDINARY_API_KEY,
-    api_secret: process.env.CLOUDINARY_API_SECRET,
-  });
+//   cloudinary.config({
+//     cloud_name: process.env.CLOUD_NAME,
+//     api_key: process.env.CLOUDINARY_API_KEY,
+//     api_secret: process.env.CLOUDINARY_API_SECRET,
+//   });
   
+
+//   try {
+//     // Check if the email is already in use
+//     const existingStudent = await Student.findOne({ email });
+//     if (existingStudent) {
+//       return res.status(400).json({ success: false, message: "Email already in use" });
+//     }
+
+//     // Hash the password
+//     const hashedPassword = await bcrypt.hash(password, 10);
+
+//     // Handle image upload to Cloudinary
+//     let profileImageUrl = null;
+//     if (req.file) {
+//       const result = await new Promise((resolve, reject) => {
+//         cloudinary.uploader.upload_stream({ resource_type: 'image' }, (error, result) => {
+//           if (error) {
+//             return reject(error);
+//           }
+//           resolve(result);
+//         }).end(req.file.buffer);
+//       });
+
+//       profileImageUrl = result.secure_url;
+//     }
+
+//     console.log("profile image url",profileImageUrl)
+
+//     // const transporter = nodemailer.createTransport({
+//     //   host: "smtp.ethereal.email",
+//     //   port: 587,
+//     //   secure: false, // true for port 465, false for other ports
+//     //   auth: {
+//     //     user: "maddison53@ethereal.email",
+//     //     pass: "jn7jnAPss4f63QBp6D",
+//     //   },
+//     // });
+
+//     // const info = await transporter.sendMail({
+//     //   from: '"Alumni Associate Portal" <alumni@ethereal.email>', // sender address
+//     //   to: email, // list of receivers
+//     //   subject: 'Verify Your Email',
+//     //     html: \Please click the following link to verify your email: <a href="\${verificationUrl}">\${verificationUrl}</a>\
+
+//     // });
+  
+//     // console.log("Message sent: %s", info.messageId);
+
+//     // if(!isEmailVerified){
+//     //   return res.status(400).json({ success: false, message: "Email not verified"})
+//     // }
+    
+//     // Create new student
+//     const newStudent = new Student({
+//       name,
+//       email,
+//       password: hashedPassword,
+//       phone,
+//       skills,
+//       workingAt,
+//       yearOfPassing,
+//       course,
+//       batch,
+//       profileImage: profileImageUrl, // store image URL
+//     });
+
+//     // Save the student to the database
+//     await newStudent.save();
+
+//     res.status(201).json({ success: true, message: "Student registered successfully" });
+//   } catch (error) {
+//     console.error("Error during signup:", error);
+//     res.status(500).json({ success: false, message: "Server error" });
+//   }
+// };
+
+export const signup = async (req, res) => {
+  const { name, email, password, phone, skills, isAlumni, working, workingAt, yearOfPassing, course, batch } = req.body;
 
   try {
     // Check if the email is already in use
@@ -52,32 +130,6 @@ export const signup = async (req, res) => {
       profileImageUrl = result.secure_url;
     }
 
-    console.log("profile image url",profileImageUrl)
-
-    // const transporter = nodemailer.createTransport({
-    //   host: "smtp.ethereal.email",
-    //   port: 587,
-    //   secure: false, // true for port 465, false for other ports
-    //   auth: {
-    //     user: "maddison53@ethereal.email",
-    //     pass: "jn7jnAPss4f63QBp6D",
-    //   },
-    // });
-
-    // const info = await transporter.sendMail({
-    //   from: '"Alumni Associate Portal" <alumni@ethereal.email>', // sender address
-    //   to: email, // list of receivers
-    //   subject: 'Verify Your Email',
-    //     html: \Please click the following link to verify your email: <a href="\${verificationUrl}">\${verificationUrl}</a>\
-
-    // });
-  
-    // console.log("Message sent: %s", info.messageId);
-
-    // if(!isEmailVerified){
-    //   return res.status(400).json({ success: false, message: "Email not verified"})
-    // }
-    
     // Create new student
     const newStudent = new Student({
       name,
@@ -85,11 +137,13 @@ export const signup = async (req, res) => {
       password: hashedPassword,
       phone,
       skills,
-      workingAt,
+      isAlumni,
+      working: isAlumni ? working : false, // Only store working status if they are alumni
+      workingAt: isAlumni && working ? workingAt : '', // Only store workingAt if they are working
       yearOfPassing,
       course,
       batch,
-      profileImage: profileImageUrl, // store image URL
+      profileImage: profileImageUrl,
     });
 
     // Save the student to the database
@@ -101,6 +155,7 @@ export const signup = async (req, res) => {
     res.status(500).json({ success: false, message: "Server error" });
   }
 };
+
 
 
 

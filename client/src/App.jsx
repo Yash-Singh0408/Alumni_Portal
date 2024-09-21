@@ -5,11 +5,11 @@ import { BrowserRouter as Router,Routes,Route ,Link } from "react-router-dom";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
-import List from "./components/List";
 import Profile from "./pages/Profile/";
 import Desktop from "./pages/Desktop";
-import AluminiList from "./components/AluminiList";
-import StudentList from "./components/StudentList";
+import Students from "./pages/Students"
+import Alumini from "./pages/Alumini";
+import CollegeStudents from "./pages/CollegeStudents";
 const App = () => {
   return (
     <Router>
@@ -17,9 +17,9 @@ const App = () => {
         <Route path="/home" element={<Home/>}/>
         <Route path="/login" element={<Login/>}/>
         <Route path="/signup" element={<Signup/>}/>
-        <Route path="/students" element={<List/>}/>
-        <Route path="/college-students" element={<StudentList/>}/>
-        <Route path="/alumini" element={<AluminiList/>}/>
+        <Route path="/students" element={<Students/>}/>
+        <Route path="/college-students" element={<CollegeStudents/>}/>
+        <Route path="/alumini" element={<Alumini/>}/>
         <Route path="/profile" element={<Profile/>}/>
         <Route path="/dashboard" element={<Desktop/>}/>
       </Routes>

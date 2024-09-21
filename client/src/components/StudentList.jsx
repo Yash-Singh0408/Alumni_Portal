@@ -200,7 +200,7 @@ export default function StudentList() {
                     <td className="px-4 py-2">{student._id}</td>
                     <td className="px-4 py-2 flex items-center">
                       <div className="flex items-center">
-                        <div className={`w-8 h-8 rounded-full ${Object.values(avatarColors)[index % 3]} flex items-center justify-center mr-2`}>
+                      <div className={`w-8 h-8 rounded-full ${Object.values(avatarColors)[index % 3]} flex items-center justify-center mr-2 flex-shrink-0`}>
                           <User className="text-white" size={16} />
                         </div>
                         {student.name}
