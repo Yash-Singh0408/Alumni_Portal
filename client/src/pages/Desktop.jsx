@@ -8,7 +8,7 @@ import EventList from '../components/EventList';
 import StudentList from '../components/StudentList';
 import AluminiList from '../components/AluminiList';
 import List from '../components/List';
-import PropTypes from 'prop-types';
+
 
 const Desktop = () => {
   const [activeComponent, setActiveComponent] = useState('events');
