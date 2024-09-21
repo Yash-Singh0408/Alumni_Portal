@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
 import axios from 'axios';
 import { FaGraduationCap, FaBriefcase, FaCalendarAlt, FaUsers, FaUserGraduate, FaSchool, FaBars } from 'react-icons/fa';
 import Navbar from '../components/Navbar';
@@ -82,7 +83,7 @@ const Desktop = () => {
         <div className="container mx-auto px-4 py-8">
           <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
             <h1 className="text-3xl font-bold text-gray-800 mb-2">Welcome, Username!</h1>
-            <p className="text-gray-600">Here's what's happening in your Alumni Network.</p>
+            <p className="text-gray-600">Here&apos;s what&apos;s happening in your Alumni Network.</p>
           </div>
           {renderComponent()}
         </div>
@@ -101,6 +102,13 @@ const SidebarItem = ({ icon, text, onClick, active }) => (
     <span>{text}</span>
   </li>
 );
+
+SidebarItem.propTypes = {
+  icon: PropTypes.node.isRequired,
+  text: PropTypes.string.isRequired,
+  onClick: PropTypes.func.isRequired,
+  active: PropTypes.bool.isRequired,
+};
 
 const QuickAccessButton = ({ icon, title, description }) => (
   <div className="bg-white rounded-lg shadow-sm p-6 flex items-start">
@@ -138,6 +146,14 @@ const EventCard = ({ image, title, description, date, location }) => {
       </div>
     </div>
   );
+};
+
+EventCard.propTypes = {
+  image: PropTypes.string,
+  title: PropTypes.string.isRequired,
+  description: PropTypes.string.isRequired,
+  date: PropTypes.string.isRequired,
+  location: PropTypes.string.isRequired,
 };
 
 const AlumniConnectionItem = ({ name, batch }) => (
