@@ -25,20 +25,26 @@ export default function StudentList() {
     fetchStudents()
   }, [])
 
-  const fetchStudents = () => {
-    fetch('http://localhost:3000/api/auth/getstudents')
-      .then((response) => response.json())
-      .then((data) => {
-        setStudents(data)
-        const uniqueCourses = [...new Set(data.map(student => student.course))]
-        const uniqueBatches = [...new Set(data.map(student => student.batch))]
-        setCourses(uniqueCourses)
-        setBatches(uniqueBatches)
-      })
-      .catch((error) => {
-        console.error('Error fetching students:', error)
-      })
-  }
+  const fetchStudents = async () => {
+    try {
+      const response = await fetch('http://localhost:3000/api/auth/getusers');
+      const data = await response.json();
+  
+      // Filter out students based on the isAlumni field being false
+      const studentData = data.filter(user => !user.isAlumni);
+  
+      setStudents(studentData);
+  
+      const uniqueCourses = [...new Set(studentData.map(student => student.course))];
+      const uniqueBatches = [...new Set(studentData.map(student => student.batch))];
+  
+      setCourses(uniqueCourses);
+      setBatches(uniqueBatches);
+    } catch (error) {
+      console.error('Error fetching students:', error);
+    }
+  };
+  
 
   const filteredStudents = students.filter(student =>
     student.name.toLowerCase().includes(searchTerm.toLowerCase()) &&
@@ -200,7 +206,7 @@ export default function StudentList() {
                     <td className="px-4 py-2">{student._id}</td>
                     <td className="px-4 py-2 flex items-center">
                       <div className="flex items-center">
-                        <div className={`w-8 h-8 rounded-full ${Object.values(avatarColors)[index % 3]} flex items-center justify-center mr-2`}>
+                      <div className={`w-8 h-8 rounded-full ${Object.values(avatarColors)[index % 3]} flex items-center justify-center mr-2 flex-shrink-0`}>
                           <User className="text-white" size={16} />
                         </div>
                         {student.name}

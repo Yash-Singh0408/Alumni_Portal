@@ -146,7 +146,6 @@ export default function AlumniList() {
 
   return (
     <>
-      <Navbar />
       <div className="container mx-auto p-4">
         <div className="flex flex-col sm:flex-row justify-between items-center mb-6">
           <h1 className="text-2xl font-bold mb-4 sm:mb-0">Alumni</h1>
@@ -206,7 +205,7 @@ export default function AlumniList() {
                     <td className="px-4 py-2">{alumnus._id}</td>
                     <td className="px-4 py-2 flex items-center">
                       <div className="flex items-center">
-                        <div className={`w-8 h-8 rounded-full ${Object.values(avatarColors)[index % 3]} flex items-center justify-center mr-2`}>
+                      <div className={`w-8 h-8 rounded-full ${Object.values(avatarColors)[index % 3]} flex items-center justify-center mr-2 flex-shrink-0`}>
                           <User className="text-white" size={16} />
                         </div>
                         {alumnus.name}
@@ -329,7 +328,6 @@ export default function AlumniList() {
         </div>
       )}
 
-      <Footer />
     </>
   );
 }
