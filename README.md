@@ -7,7 +7,7 @@ Alumni Portal is a web platform connecting alumni and students with authenticati
 
 ### Prerequisites
 
-- Node.js
+- React
 - npm
 - MongoDB
 
